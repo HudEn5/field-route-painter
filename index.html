@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="四人协作开发的赛场自动路线打点画板">
+  <title>赛场路线画板</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body data-team="red">
+  <main class="workspace">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">FIELD ROUTE PAINTER / 四人协作练习</p>
+        <h1>赛场路线画板<span class="badge">基础框架</span></h1>
+        <p class="subtitle">从一个点开始，规划一条路线。</p>
+      </div>
+      <a class="repo-link" href="https://github.com/HudEn5/field-route-painter" target="_blank" rel="noreferrer">查看项目仓库 ↗</a>
+    </header>
+    <section class="toolbar" aria-label="画板工具栏">
+      <div class="toolbar-group">
+        <button id="undo-button" type="button" disabled>撤销最后一点</button>
+        <button id="clear-button" type="button" disabled>清空路线</button>
+      </div>
+      <div class="toolbar-group">
+        <label for="team-select">阵营</label>
+        <select id="team-select" disabled><option value="red">红方</option><option value="blue">蓝方</option></select>
+        <label class="checkbox-label"><input id="coordinates-toggle" type="checkbox" checked disabled> 显示坐标</label>
+      </div>
+    </section>
+    <div class="editor-layout">
+      <section class="canvas-panel" aria-labelledby="canvas-heading">
+        <div class="panel-heading"><h2 id="canvas-heading">赛场画布</h2><span>逻辑尺寸 1000 × 1000</span></div>
+        <div class="canvas-frame"><canvas id="route-canvas" width="1000" height="1000" role="img" aria-label="空白赛场网格，打点连线功能待开发">你的浏览器不支持 Canvas，请使用支持 Canvas 的浏览器。</canvas></div>
+        <div class="canvas-footer"><span>左上角 (0, 0) · X 向右 · Y 向下</span><output id="pointer-coordinates" aria-label="鼠标坐标">鼠标坐标：待实现</output></div>
+      </section>
+      <aside class="sidebar">
+        <section class="info-card" aria-labelledby="route-heading">
+          <div class="panel-heading"><h2 id="route-heading">路线坐标</h2><span><output id="point-count">0</output> 个点</span></div>
+          <p id="coordinates-empty" class="empty-state">坐标列表待实现。<br>默认显示逻辑坐标，不代表真实距离。</p>
+          <ol id="coordinate-list" class="coordinate-list" aria-label="路径点坐标"></ol>
+        </section>
+        <section class="info-card project-note">
+          <p class="eyebrow">当前进度</p><h2>框架已就绪，功能待认领</h2>
+          <p>画布网格、页面布局和共享状态已准备好。工具栏暂时禁用，供后续任务接入。</p>
+          <ul><li>T01 · 点击打点与连线</li><li>T02 · 撤销与清空</li><li>T03 · 红蓝配色与坐标</li></ul>
+          <p>请查看 README 中的任务表和接口约定。</p>
+        </section>
+      </aside>
+    </div>
+    <p id="app-status" class="app-status" role="status">正在初始化框架…</p>
+  </main>
+  <!-- 脚本顺序也是单文件打包顺序，请由 A 统一调整。 -->
+  <script src="src/store.js"></script>
+  <script src="src/renderer.js"></script>
+  <script src="src/interactions.js"></script>
+  <script src="src/controls.js"></script>
+  <script src="src/coordinates.js"></script>
+  <script src="src/app.js"></script>
+</body>
+</html>
