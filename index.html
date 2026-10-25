@@ -12,7 +12,7 @@
     <header class="page-header">
       <div>
         <p class="eyebrow">FIELD ROUTE PAINTER / 四人协作练习</p>
-        <h1>赛场路线画板<span class="badge">基础框架</span></h1>
+        <h1>赛场路线画板</h1>
         <p class="subtitle">从一个点开始，规划一条路线。</p>
       </div>
       <a class="repo-link" href="https://github.com/HudEn5/field-route-painter" target="_blank" rel="noreferrer">查看项目仓库 ↗</a>
@@ -31,8 +31,8 @@
     <div class="editor-layout">
       <section class="canvas-panel" aria-labelledby="canvas-heading">
         <div class="panel-heading"><h2 id="canvas-heading">赛场画布</h2><span>逻辑尺寸 1000 × 1000</span></div>
-        <div class="canvas-frame"><canvas id="route-canvas" width="1000" height="1000" role="img" aria-label="空白赛场网格，打点连线功能待开发">你的浏览器不支持 Canvas，请使用支持 Canvas 的浏览器。</canvas></div>
-        <div class="canvas-footer"><span>左上角 (0, 0) · X 向右 · Y 向下</span><output id="pointer-coordinates" aria-label="鼠标坐标">鼠标坐标：待实现</output></div>
+        <div class="canvas-frame"><canvas id="route-canvas" width="1000" height="1000" role="img" aria-label="暂无路径点，点击画布开始规划路线">你的浏览器不支持 Canvas，请使用支持 Canvas 的浏览器。</canvas></div>
+        <div class="canvas-footer"><span>左上角 (0, 0) · X 向右 · Y 向下</span><output id="pointer-coordinates" aria-label="鼠标坐标">移入画布查看坐标</output></div>
       </section>
       <aside class="sidebar">
         <section class="info-card" aria-labelledby="route-heading">
@@ -41,14 +41,14 @@
           <ol id="coordinate-list" class="coordinate-list" aria-label="路径点坐标"></ol>
         </section>
         <section class="info-card project-note">
-          <p class="eyebrow">当前进度</p><h2>框架已就绪，功能待认领</h2>
-          <p>画布网格、页面布局和共享状态已准备好。工具栏暂时禁用，供后续任务接入。</p>
-          <ul><li>T01 · 点击打点与连线</li><li>T02 · 撤销与清空</li><li>T03 · 红蓝配色与坐标</li></ul>
-          <p>请查看 README 中的任务表和接口约定。</p>
+          <p class="eyebrow">使用提示</p><h2>点击赛场，规划路线</h2>
+          <p>依次点击画布添加路径点，画板会按顺序连线。</p>
+          <ul><li>撤销：删除最后一个路径点</li><li>清空：删除全部路径</li><li>红蓝切换和坐标开关会保留路线</li></ul>
+          <p>坐标用于规划示意，不代表实际距离。刷新或关闭页面后，当前路线不会保留。</p>
         </section>
       </aside>
     </div>
-    <p id="app-status" class="app-status" role="status">正在初始化框架…</p>
+    <p id="app-status" class="app-status" role="status">正在加载画板…</p>
   </main>
   <!-- 脚本顺序也是单文件打包顺序，请由 A 统一调整。 -->
   <script src="src/store.js"></script>
