@@ -1,15 +1,46 @@
-/* T02：撤销和清空。页面已预留按钮，功能完成后由本模块启用。 */
+/* T02：撤销和清空，通过共享状态同步画布、计数和坐标列表。 */
 (function () {
   "use strict";
   const app = window.RoutePainter = window.RoutePainter || {};
+  let cleanup = null;
   app.controls = {
     init(context) {
-      // TODO T02：为 elements.undoButton / clearButton 绑定事件。
-      // 撤销：用新数组保留前 n-1 个点；清空：设置 points: []。
-      // 订阅共享状态，无点时禁用按钮，有点时启用。
-      // 初始化时先主动读取 getState() 更新一次按钮。
-      // 即使当前 points 为空，重复操作也不能报错。
-      void context;
+      // 释放上一次的事件和订阅，避免重复初始化导致一次撤销多个点。
+      app.controls.destroy();
+      const { store, elements } = context;
+      const { undoButton, clearButton } = elements;
+
+      const updateButtons = (state) => {
+        const isEmpty = state.points.length === 0;
+        undoButton.disabled = isEmpty;
+        clearButton.disabled = isEmpty;
+      };
+
+      const undoLastPoint = () => {
+        const { points } = store.getState();
+        if (points.length === 0) return;
+        store.setState({ points: points.slice(0, -1) });
+      };
+
+      const clearPoints = () => {
+        if (store.getState().points.length === 0) return;
+        store.setState({ points: [] });
+      };
+
+      undoButton.addEventListener("click", undoLastPoint);
+      clearButton.addEventListener("click", clearPoints);
+      const unsubscribe = store.subscribe(updateButtons);
+      cleanup = () => {
+        undoButton.removeEventListener("click", undoLastPoint);
+        clearButton.removeEventListener("click", clearPoints);
+        unsubscribe();
+      };
+      updateButtons(store.getState());
+    },
+    destroy() {
+      if (!cleanup) return;
+      cleanup();
+      cleanup = null;
     }
   };
 }());
