@@ -2,7 +2,7 @@
 
 四人 Git 协作练习：用 HTML Canvas 制作赛场路线打点画板，体验认领任务、分支开发、测试、PR、合并和同步流程。
 
-**当前状态：T00 基础框架及 T01、T02、T03 基本功能均已合入 main。** T01 关联 [PR #7](https://github.com/HudEn5/field-route-painter/pull/7)，T02 关联 [PR #10](https://github.com/HudEn5/field-route-painter/pull/10)，T03 关联 [PR #8](https://github.com/HudEn5/field-route-painter/pull/8)。接下来由 T04 完成最终联合验收和页面文案整理，再由 T05 完成单文件交付及版本标记。
+**当前状态：T00 至 T04 的代码及页面整理均已合入 main，A 已通过独立 HTML 的断网验收。** T01 关联 [PR #7](https://github.com/HudEn5/field-route-painter/pull/7)，T02 关联 [PR #10](https://github.com/HudEn5/field-route-painter/pull/10)，T03 关联 [PR #8](https://github.com/HudEn5/field-route-painter/pull/8)，T04 关联 [PR #12](https://github.com/HudEn5/field-route-painter/pull/12)。已验证的代码版本为 `512c5af`，测试范围见第 8 节；T05 正在整理交付记录，正式版本 tag 和最终交付尚未完成。
 
 ## 1. 目标和交付
 
@@ -47,8 +47,8 @@ A 为 HudEn5；当前负责人见下表，角色列为建议分工。每人使�
 | T01 | 点击打点与路径绘制 | B | HEEYEEW | 已合并 | T00 合并 | [#5](https://github.com/HudEn5/field-route-painter/issues/5) | [#7](https://github.com/HudEn5/field-route-painter/pull/7) |
 | T02 | 撤销与一键清空 | C | mikeypandeserve | 已合并 | T00 合并；与 T01 联测 | [#4](https://github.com/HudEn5/field-route-painter/issues/4) | [#10](https://github.com/HudEn5/field-route-painter/pull/10) |
 | T03 | 红蓝配色和坐标显示 | D | Dyeverse | 已合并 | T00 合并；与 T01 联测 | [#3](https://github.com/HudEn5/field-route-painter/issues/3) | [#8](https://github.com/HudEn5/field-route-painter/pull/8) |
-| T04 | 功能集成与联合验收 | A 组织，全员测试 | HudEn5 | 开发中 | T01、T02、T03 合并 | 无 | 待创建 |
-| T05 | 单文件交付、使用说明和版本标记 | A | HudEn5 | 待认领 | T04 通过 | 无 | 待创建 |
+| T04 | 功能集成与联合验收 | A 组织，全员测试 | HudEn5 | 已合并 | T01、T02、T03 合并 | 无 | [#12](https://github.com/HudEn5/field-route-painter/pull/12) |
+| T05 | 单文件交付、使用说明和版本标记 | A | HudEn5 | 开发中 | T04 通过 | 无 | 待创建 |
 
 ### T00 · 基础框架（A）
 
@@ -201,26 +201,29 @@ node scripts/build.mjs
 
 输出 `dist/field-route-painter.html`，内联当前 CSS 和 JS。每次源码变化后重新打包。把输出文件单独复制到空文件夹，断网后双击验证。
 
+HudEn5 已于 2026-10-26 使用 Microsoft Edge 验证 `512c5af` 生成的独立 HTML：断网刷新、打点连线、撤销、配色、坐标显隐、清空后重新打点及刷新重置均通过。交付时提供仓库链接和该 HTML 文件；版本标记完成后再提供实际 tag。文件校验值及测试边界见 [验收记录](docs/acceptance.md)。
+
 以后若增加图片、字体等资源，必须同步调整打包方式，不能留下本地文件依赖。打包成功只代表生成了 HTML，不代表 T01/T02/T03 功能已完成。
 
 ## 8. 联合验收清单（功能合并后执行）
 
-T04 工作区的 AI 辅助预检已完成，具体范围和结果见 [验收记录](docs/acceptance.md)。以下清单在最终 main 版本及交付 HTML 上确认通过后再勾选。
+以下结果汇总 AI 辅助浏览器预检、合并后脚本检查及 HudEn5 的独立 HTML 断网实测，具体范围见 [验收记录](docs/acceptance.md)。`512c5af` 的页面、样式、脚本、构建及测试文件与预检提交 `09c1343` 一致。未收到其他三位成员对最终版本的独立确认，不将本记录描述为全员验收通过。
 
-- [ ] 页面正常初始化，浏览器 Console 无异常。
-- [ ] 点 3 次得到 3 个点、连续编号和 2 段连线。
-- [ ] 调整窗口大小后点击位置、逻辑坐标仍准确。
-- [ ] 连续撤销到 0，点和线依次消失；空路线无异常。
-- [ ] 清空后点、线、计数和坐标列表归零，可以重新打点。
-- [ ] 红蓝切换后路线颜色变化，点数和位置不变。
-- [ ] 鼠标坐标及点列表正确，撤销/清空后同步更新。
-- [ ] 关闭再打开坐标，路线不丢失，读数正确恢复。
-- [ ] 单点、边缘点击、连续快速点击无异常。
-- [ ] 手机宽度不横向溢出，工具栏换行、画布保持方形。
-- [ ] 单文件 HTML 在另一文件夹断网打开后全部功能可用。
+- [x] 页面正常初始化，浏览器 Console 无异常。
+- [x] 点 3 次得到 3 个点、连续编号和 2 段连线。
+- [x] 调整窗口大小后点击位置、逻辑坐标仍准确。
+- [x] 连续撤销到 0，点和线依次消失；空路线无异常。
+- [x] 清空后点、线、计数和坐标列表归零，可以重新打点。
+- [x] 红蓝切换后路线颜色变化，点数和位置不变。
+- [x] 鼠标坐标及点列表正确，撤销/清空后同步更新。
+- [x] 关闭再打开坐标，路线不丢失，读数正确恢复。
+- [x] 单点、边缘点击、连续快速点击无异常。
+- [x] 手机宽度不横向溢出，工具栏换行、画布保持方形。
+- [x] 单文件 HTML 在另一文件夹断网打开后，所列基本交互和刷新重置检查通过。
 
 实际通过后才勾选；A 根据成员的真实测试结果更新记录。
 
 | 测试成员 | 日期 | 浏览器/版本 | 对应提交 SHA | 步骤和结果 | 未通过项/修复 PR |
 | --- | --- | --- | --- | --- | --- |
-| HudEn5（AI 辅助预检） | 2026-10-26 | 内置浏览器，桌面及 390px 宽度 | T04 工作区，基线 b52f2c1；合并后 SHA 待记录 | 源码页面交互、9 项测试及单文件打包检查通过，详见验收记录 | 待在最终 main 上确认，并由成员验证独立 HTML 双击、断网运行 |
+| HudEn5（AI 辅助预检及合并后脚本复核） | 2026-10-26 | 内置浏览器，桌面及 390px 宽度；版本未记录 | 预检 09c1343；合并后 512c5af，功能文件一致 | 源码交互预检通过；合并后 JS 语法、9 项测试及单文件构建通过 | 本范围无未通过项；其他成员最终确认待收集 |
+| HudEn5（本人实测） | 2026-10-26 | Microsoft Edge；版本未记录 | 512c5af 生成的独立 HTML | 单独复制到空文件夹，双击后断网刷新；三点两线、撤销、红蓝切换、坐标显隐、清空后再打点、刷新重置全部通过 | 所列检查无未通过项 |
