@@ -2,7 +2,7 @@
 
 四人 Git 协作练习：用 HTML Canvas 制作赛场路线打点画板，体验认领任务、分支开发、测试、PR、合并和同步流程。
 
-**当前状态：T00 至 T04 的代码及页面整理均已合入 main，A 已通过独立 HTML 的断网验收。** T01 关联 [PR #7](https://github.com/HudEn5/field-route-painter/pull/7)，T02 关联 [PR #10](https://github.com/HudEn5/field-route-painter/pull/10)，T03 关联 [PR #8](https://github.com/HudEn5/field-route-painter/pull/8)，T04 关联 [PR #12](https://github.com/HudEn5/field-route-painter/pull/12)。已验证的代码版本为 `512c5af`，测试范围见第 8 节；T05 正在整理交付记录，正式版本 tag 和最终交付尚未完成。
+**当前状态：基本功能及页面整理已合入 main，正式版本 v1.0.0 已发布，交付材料已就绪。** T01 关联 [PR #7](https://github.com/HudEn5/field-route-painter/pull/7)，T02 关联 [PR #10](https://github.com/HudEn5/field-route-painter/pull/10)，T03 关联 [PR #8](https://github.com/HudEn5/field-route-painter/pull/8)，T04 关联 [PR #12](https://github.com/HudEn5/field-route-painter/pull/12)，断网验收记录关联 [PR #13](https://github.com/HudEn5/field-route-painter/pull/13)。[v1.0.0](https://github.com/HudEn5/field-route-painter/tree/v1.0.0) 指向 `bc588f7`，功能文件与已验收的 `512c5af` 一致；A 已完成独立 HTML 断网验收，并确认其余三位成员已同步 `bc588f7`、各自负责功能测试通过。向任务发布者提交仓库链接及 HTML 文件由 A 执行，本记录不代替实际提交。
 
 ## 1. 目标和交付
 
@@ -39,7 +39,7 @@ A 为 HudEn5；当前负责人见下表，角色列为建议分工。每人使�
 3. **T00 合入 main 后**，认领者 Fetch，从最新 `origin/main` 创建自己的任务分支。不要从别人的任务分支开始。
 4. 完成功能、自测、同步最新 main，再提 PR；A 合并并发通知后才改成“已合并”。
 
-状态：待认领 / 开发中 / 待合并 / 已合并。A 确认认领后进入“开发中”；功能通过验证并合并后才标为“已合并”。T01、T02、T03 可以并行开发，合并后再联合测试。
+状态：待认领 / 开发中 / 待合并 / 已合并 / 已发布。A 确认认领后进入“开发中”；功能通过验证并合并后才标为“已合并”。“已发布”用于 T05，表示交付文件已生成并验收、正式 tag 已推送；向任务发布者提交材料另行完成。T01、T02、T03 可以并行开发，合并后再联合测试。
 
 | 编号 | 任务 | 建议角色 | GitHub 负责人 | 状态 | 依赖 | 认领 Issue | 相关 PR |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -48,7 +48,7 @@ A 为 HudEn5；当前负责人见下表，角色列为建议分工。每人使�
 | T02 | 撤销与一键清空 | C | mikeypandeserve | 已合并 | T00 合并；与 T01 联测 | [#4](https://github.com/HudEn5/field-route-painter/issues/4) | [#10](https://github.com/HudEn5/field-route-painter/pull/10) |
 | T03 | 红蓝配色和坐标显示 | D | Dyeverse | 已合并 | T00 合并；与 T01 联测 | [#3](https://github.com/HudEn5/field-route-painter/issues/3) | [#8](https://github.com/HudEn5/field-route-painter/pull/8) |
 | T04 | 功能集成与联合验收 | A 组织，全员测试 | HudEn5 | 已合并 | T01、T02、T03 合并 | 无 | [#12](https://github.com/HudEn5/field-route-painter/pull/12) |
-| T05 | 单文件交付、使用说明和版本标记 | A | HudEn5 | 开发中 | T04 通过 | 无 | 待创建 |
+| T05 | 单文件交付、使用说明和版本标记 | A | HudEn5 | 已发布 | T04 通过 | 无 | [#13](https://github.com/HudEn5/field-route-painter/pull/13)；[v1.0.0](https://github.com/HudEn5/field-route-painter/tree/v1.0.0) |
 
 ### T00 · 基础框架（A）
 
@@ -201,13 +201,21 @@ node scripts/build.mjs
 
 输出 `dist/field-route-painter.html`，内联当前 CSS 和 JS。每次源码变化后重新打包。把输出文件单独复制到空文件夹，断网后双击验证。
 
-HudEn5 已于 2026-10-26 使用 Microsoft Edge 验证 `512c5af` 生成的独立 HTML：断网刷新、打点连线、撤销、配色、坐标显隐、清空后重新打点及刷新重置均通过。交付时提供仓库链接和该 HTML 文件；版本标记完成后再提供实际 tag。文件校验值及测试边界见 [验收记录](docs/acceptance.md)。
+HudEn5 已于 2026-10-26 使用 Microsoft Edge 验证 `512c5af` 生成的独立 HTML：断网刷新、打点连线、撤销、配色、坐标显隐、清空后重新打点及刷新重置均通过。正式 tag `v1.0.0` 指向 `bc588f7`，功能及构建文件与该验收版本一致。文件校验值及测试范围见 [验收记录](docs/acceptance.md)。
+
+交付材料：
+
+- 仓库：[HudEn5/field-route-painter](https://github.com/HudEn5/field-route-painter)。
+- 正式版本：[v1.0.0](https://github.com/HudEn5/field-route-painter/tree/v1.0.0)，提交 `bc588f7`。
+- 独立文件：执行本节构建命令后得到的 `dist/field-route-painter.html`，单独作为文件发送。该产物不纳入 Git，仓库的源码 ZIP 不包含它。
+
+本次收尾仅补充文档，保留 `v1.0.0` 原有指向。
 
 以后若增加图片、字体等资源，必须同步调整打包方式，不能留下本地文件依赖。打包成功只代表生成了 HTML，不代表 T01/T02/T03 功能已完成。
 
 ## 8. 联合验收清单（功能合并后执行）
 
-以下结果汇总 AI 辅助浏览器预检、合并后脚本检查及 HudEn5 的独立 HTML 断网实测，具体范围见 [验收记录](docs/acceptance.md)。`512c5af` 的页面、样式、脚本、构建及测试文件与预检提交 `09c1343` 一致。未收到其他三位成员对最终版本的独立确认，不将本记录描述为全员验收通过。
+以下结果汇总 AI 辅助浏览器预检、合并后脚本检查及 HudEn5 的独立 HTML 断网实测，具体范围见 [验收记录](docs/acceptance.md)。`512c5af` 的页面、样式、脚本、构建及测试文件与预检提交 `09c1343` 一致，`bc588f7` 仅增加验收文档。2026-10-26，HudEn5 在协作会话中确认：其余三位成员均已同步 `bc588f7`，并确认各自负责功能测试通过；成员的浏览器版本及逐步操作记录未另行提供。
 
 - [x] 页面正常初始化，浏览器 Console 无异常。
 - [x] 点 3 次得到 3 个点、连续编号和 2 段连线。
@@ -225,5 +233,6 @@ HudEn5 已于 2026-10-26 使用 Microsoft Edge 验证 `512c5af` 生成的独立 
 
 | 测试成员 | 日期 | 浏览器/版本 | 对应提交 SHA | 步骤和结果 | 未通过项/修复 PR |
 | --- | --- | --- | --- | --- | --- |
-| HudEn5（AI 辅助预检及合并后脚本复核） | 2026-10-26 | 内置浏览器，桌面及 390px 宽度；版本未记录 | 预检 09c1343；合并后 512c5af，功能文件一致 | 源码交互预检通过；合并后 JS 语法、9 项测试及单文件构建通过 | 本范围无未通过项；其他成员最终确认待收集 |
+| HudEn5（AI 辅助预检及合并后脚本复核） | 2026-10-26 | 内置浏览器，桌面及 390px 宽度；版本未记录 | 预检 09c1343；合并后 512c5af，功能文件一致 | 源码交互预检通过；合并后 JS 语法、9 项测试及单文件构建通过 | 本范围无未通过项 |
 | HudEn5（本人实测） | 2026-10-26 | Microsoft Edge；版本未记录 | 512c5af 生成的独立 HTML | 单独复制到空文件夹，双击后断网刷新；三点两线、撤销、红蓝切换、坐标显隐、清空后再打点、刷新重置全部通过 | 所列检查无未通过项 |
+| HEEYEEW / mikeypandeserve / Dyeverse（A 汇总确认） | 2026-10-26（A 确认日期） | 未提供 | bc588f7 | A 确认三人已同步，且各自负责的 T01 / T02 / T03 功能测试通过；未提供逐步操作记录 | A 未报告未通过项 |
