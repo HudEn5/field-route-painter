@@ -47,7 +47,7 @@ A 为 HudEn5；当前负责人见下表，角色列为建议分工。每人使�
 | T01 | 点击打点与路径绘制 | B | HEEYEEW | 已合并 | T00 合并 | [#5](https://github.com/HudEn5/field-route-painter/issues/5) | [#7](https://github.com/HudEn5/field-route-painter/pull/7) |
 | T02 | 撤销与一键清空 | C | mikeypandeserve | 已合并 | T00 合并；与 T01 联测 | [#4](https://github.com/HudEn5/field-route-painter/issues/4) | [#10](https://github.com/HudEn5/field-route-painter/pull/10) |
 | T03 | 红蓝配色和坐标显示 | D | Dyeverse | 已合并 | T00 合并；与 T01 联测 | [#3](https://github.com/HudEn5/field-route-painter/issues/3) | [#8](https://github.com/HudEn5/field-route-painter/pull/8) |
-| T04 | 功能集成与联合验收 | A 组织，全员测试 | HudEn5 | 待认领 | T01、T02、T03 合并 | 无 | 待创建 |
+| T04 | 功能集成与联合验收 | A 组织，全员测试 | HudEn5 | 开发中 | T01、T02、T03 合并 | 无 | 待创建 |
 | T05 | 单文件交付、使用说明和版本标记 | A | HudEn5 | 待认领 | T04 通过 | 无 | 待创建 |
 
 ### T00 · 基础框架（A）
@@ -205,6 +205,8 @@ node scripts/build.mjs
 
 ## 8. 联合验收清单（功能合并后执行）
 
+T04 工作区的 AI 辅助预检已完成，具体范围和结果见 [验收记录](docs/acceptance.md)。以下清单在最终 main 版本及交付 HTML 上确认通过后再勾选。
+
 - [ ] 页面正常初始化，浏览器 Console 无异常。
 - [ ] 点 3 次得到 3 个点、连续编号和 2 段连线。
 - [ ] 调整窗口大小后点击位置、逻辑坐标仍准确。
@@ -221,4 +223,4 @@ node scripts/build.mjs
 
 | 测试成员 | 日期 | 浏览器/版本 | 对应提交 SHA | 步骤和结果 | 未通过项/修复 PR |
 | --- | --- | --- | --- | --- | --- |
-| 待填写 | 待填写 | 待填写 | 待填写 | 功能 PR 已复测，最终验收待 T04/T05 执行 | 待在最终 main 上联合验收，并验证交付 HTML 在独立文件夹断网运行 |
+| HudEn5（AI 辅助预检） | 2026-10-26 | 内置浏览器，桌面及 390px 宽度 | T04 工作区，基线 b52f2c1；合并后 SHA 待记录 | 源码页面交互、9 项测试及单文件打包检查通过，详见验收记录 | 待在最终 main 上确认，并由成员验证独立 HTML 双击、断网运行 |

@@ -34,7 +34,7 @@
         if (!state.showCoordinates) return;
         
         if (typeof renderer.canvasToPoint !== "function") {
-          pointerCoordinates.textContent = "坐标换算接口(T01)未实现";
+          pointerCoordinates.textContent = "暂时无法显示坐标";
           return;
         }
         

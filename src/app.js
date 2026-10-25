@@ -25,7 +25,7 @@
     app.interactions.init(context);
     app.controls.init(context);
     app.coordinates.init(context);
-    document.getElementById("app-status").textContent = "框架初始化完成 · 打点、工具栏操作与坐标显示待实现";
+    document.getElementById("app-status").textContent = "画板已就绪 · 点击画布添加路径点";
   } catch (error) {
     document.getElementById("app-status").textContent = "初始化失败：" + error.message;
     console.error(error);
