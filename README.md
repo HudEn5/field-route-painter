@@ -2,7 +2,7 @@
 
 四人 Git 协作练习：用 HTML Canvas 制作赛场路线打点画板，体验认领任务、分支开发、测试、PR、合并和同步流程。
 
-**当前状态：T00 基础框架已通过 [PR #2](https://github.com/HudEn5/field-route-painter/pull/2) 合入 main；T01、T02、T03 均已确认认领，进入开发阶段。** 功能开发进度以任务表和关联 PR 为准，页面上禁用的工具仍是预留入口。
+**当前状态：T00 基础框架和 T01 点击打点、路径绘制均已合入 main；T02、T03 开发中。** T01 关联 [PR #7](https://github.com/HudEn5/field-route-painter/pull/7)。页面上禁用的工具仍是预留入口，撤销、清空、阵营选择和坐标显示待对应任务完成。
 
 ## 1. 目标和交付
 
@@ -20,7 +20,7 @@
 
 无需安装依赖，双击根目录的 `index.html`，使用 Chrome 或 Edge 打开。修改文件并保存后，刷新浏览器查看结果。
 
-当前可检查：页面布局、赛场网格、工具栏占位、初始 0 个点、框架初始化状态。其他交互按下面任务表完成。
+当前可检查：页面布局、赛场网格、点击打点、按顺序连线、点编号、点计数和边缘编号显示。撤销、清空、阵营选择和坐标显示仍待 T02/T03 完成；刷新页面会清空当前路线。
 
 可选本地服务器（已安装 Python 时）：
 
@@ -44,7 +44,7 @@ A 为 HudEn5；当前负责人见下表，角色列为建议分工。每人使�
 | 编号 | 任务 | 建议角色 | GitHub 负责人 | 状态 | 依赖 | 认领 Issue | 相关 PR |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T00 | 基础框架、公共接口、任务文档、打包脚本 | A | HudEn5 | 已合并 | 无 | 无 | [#2](https://github.com/HudEn5/field-route-painter/pull/2) |
-| T01 | 点击打点与路径绘制 | B | HEEYEEW | 开发中 | T00 合并 | [#5](https://github.com/HudEn5/field-route-painter/issues/5) | 待创建 |
+| T01 | 点击打点与路径绘制 | B | HEEYEEW | 已合并 | T00 合并 | [#5](https://github.com/HudEn5/field-route-painter/issues/5) | [#7](https://github.com/HudEn5/field-route-painter/pull/7) |
 | T02 | 撤销与一键清空 | C | mikeypandeserve | 开发中 | T00 合并；与 T01 联测 | [#4](https://github.com/HudEn5/field-route-painter/issues/4) | 待创建 |
 | T03 | 红蓝配色和坐标显示 | D | Dyeverse | 开发中 | T00 合并；与 T01 联测 | [#3](https://github.com/HudEn5/field-route-painter/issues/3) | 待创建 |
 | T04 | 功能集成与联合验收 | A 组织，全员测试 | HudEn5 | 待认领 | T01、T02、T03 合并 | 无 | 待创建 |
@@ -221,4 +221,4 @@ node scripts/build.mjs
 
 | 测试成员 | 日期 | 浏览器/版本 | 对应提交 SHA | 步骤和结果 | 未通过项/修复 PR |
 | --- | --- | --- | --- | --- | --- |
-| 待填写 | 待填写 | 待填写 | 待填写 | 尚未执行完整功能验收 | T01/T02/T03 待开发 |
+| 待填写 | 待填写 | 待填写 | 待填写 | 尚未执行完整功能验收 | T02/T03 待开发，合并后与 T01 联合验收 |
