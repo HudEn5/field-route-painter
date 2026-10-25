@@ -66,9 +66,9 @@
 
         // 生成列表
         const fragment = document.createDocumentFragment();
-        state.points.forEach((p, index) => {
+        state.points.forEach((p) => {
           const li = document.createElement("li");
-          li.textContent = `${index + 1}. (${Math.round(p.x)}, ${Math.round(p.y)})`;
+          li.textContent = `(${Math.round(p.x)}, ${Math.round(p.y)})`;
           fragment.appendChild(li);
         });
 
