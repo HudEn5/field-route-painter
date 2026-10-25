@@ -4,14 +4,85 @@
   const app = window.RoutePainter = window.RoutePainter || {};
   app.coordinates = {
     init(context) {
-      // TODO T03：启用 teamSelect 和 coordinatesToggle，绑定 change。
-      // 阵营写入 store.team；app.js 会同步 body.dataset.team 并触发重绘。
-      // 用 canvasToPoint 显示鼠标坐标；离开画布时显示占位文字。
-      // 订阅 points，在 coordinateList 中按顺序显示 (x, y)，显示时四舍五入。
-      // showCoordinates 为 false 时隐藏列表和鼠标读数，不删除 points。
-      // 用 textContent / createElement 创建列表，更新 coordinatesEmpty 提示。
-      // subscribe 只监听后续变化，初始化时先用 getState() 渲染一次。
-      void context;
+      const { store, renderer, elements } = context;
+      const { 
+        teamSelect, 
+        coordinatesToggle, 
+        pointerCoordinates, 
+        coordinateList, 
+        coordinatesEmpty, 
+        canvas 
+      } = elements;
+
+      // 0. 启用控件（页面里初始是 disabled，T03 负责开启）
+      teamSelect.disabled = false;
+      coordinatesToggle.disabled = false;
+
+      // 1. 阵营切换
+      teamSelect.addEventListener("change", (e) => {
+        store.setState({ team: e.target.value });
+      });
+
+      // 2. 坐标开关
+      coordinatesToggle.addEventListener("change", (e) => {
+        store.setState({ showCoordinates: e.target.checked });
+      });
+
+      // 3. 鼠标移动
+      canvas.addEventListener("mousemove", (e) => {
+        const state = store.getState();
+        if (!state.showCoordinates) return;
+        
+        if (typeof renderer.canvasToPoint !== "function") {
+          pointerCoordinates.textContent = "坐标换算接口(T01)未实现";
+          return;
+        }
+        
+        const point = renderer.canvasToPoint(e);
+        pointerCoordinates.textContent = `X: ${Math.round(point.x)}, Y: ${Math.round(point.y)}`;
+      });
+
+      // 4. 鼠标移出
+      canvas.addEventListener("mouseleave", () => {
+        pointerCoordinates.textContent = "鼠标移出画布";
+      });
+
+      // 5. 渲染 UI
+      function updateUI(state) {
+        // 同步控件
+        teamSelect.value = state.team;
+        coordinatesToggle.checked = state.showCoordinates;
+
+        // 显隐控制
+        const displayStyle = state.showCoordinates ? "" : "none";
+        pointerCoordinates.style.display = displayStyle;
+        coordinateList.style.display = displayStyle;
+        coordinatesEmpty.style.display = (state.showCoordinates && state.points.length === 0) ? "" : "none";
+
+        if (!state.showCoordinates) {
+          coordinateList.innerHTML = "";
+          return;
+        }
+
+        // 生成列表
+        const fragment = document.createDocumentFragment();
+        state.points.forEach((p, index) => {
+          const li = document.createElement("li");
+          li.textContent = `${index + 1}. (${Math.round(p.x)}, ${Math.round(p.y)})`;
+          fragment.appendChild(li);
+        });
+
+        coordinateList.innerHTML = "";
+        coordinateList.appendChild(fragment);
+      }
+
+      // 6. 初始渲染
+      updateUI(store.getState());
+
+      // 7. 订阅更新
+      store.subscribe((newState) => {
+        updateUI(newState);
+      });
     }
   };
 }());
