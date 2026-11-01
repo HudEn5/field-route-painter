@@ -13,6 +13,23 @@
       canvas.setAttribute("aria-label", `VEX U 对抗赛场地，1号车 ${state.routes["1"].length} 个点，2号车 ${state.routes["2"].length} 个点，当前编辑${state.activeVehicle}号车`);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       app.field.draw(ctx);
+      // 相对坐标轴固定在当前车首点；只提示原点和方向，不变换路线数据。
+      if (state.coordinateMode === "relative" && state.showCoordinates && state.points.length) {
+        const origin = state.points[0];
+        ctx.save(); ctx.setLineDash([8, 8]);
+        ctx.strokeStyle = "#edf8e5b0"; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, origin.y); ctx.lineTo(1000, origin.y);
+        ctx.moveTo(origin.x, 0); ctx.lineTo(origin.x, 1000); ctx.stroke();
+        ctx.setLineDash([]); ctx.font = "600 18px system-ui, sans-serif";
+        ctx.textAlign = "left"; ctx.lineWidth = 4; ctx.strokeStyle = "#334438"; ctx.fillStyle = "#f1ffe6";
+        const labels = [
+          [`O${state.activeVehicle} (0,0)`, Math.max(8, Math.min(870, origin.x + 20)), origin.y > 940 ? origin.y - 45 : origin.y + 45],
+          ["X →", 938, Math.max(25, origin.y - 12)],
+          ["Y ↓", Math.min(938, origin.x + 12), 975]
+        ];
+        for (const [text, x, y] of labels) { ctx.strokeText(text, x, y); ctx.fillText(text, x, y); }
+        ctx.restore();
+      }
       // 当前车最后绘制，交叉处保留当前编辑路线的清晰度。
       const order = state.activeVehicle === "1" ? ["2", "1"] : ["1", "2"];
       for (const vehicle of order) {

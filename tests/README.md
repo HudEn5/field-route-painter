@@ -3,7 +3,7 @@
 需要 Node.js 18 或以上版本，无需安装依赖。在仓库根目录执行：
 
 ```powershell
-node --test tests/controls.test.mjs tests/field.test.mjs tests/vehicles.test.mjs
+node --test tests/controls.test.mjs tests/field.test.mjs tests/vehicles.test.mjs tests/coordinates.test.mjs
 ```
 
 测试直接加载当前仓库的 `src/store.js` 和 `src/controls.js`，使用模拟按钮验证：
@@ -19,6 +19,8 @@ node --test tests/controls.test.mjs tests/field.test.mjs tests/vehicles.test.mjs
 `field.test.mjs` 额外检查名义场宽到毫米的单位换算、多段折线长度，以及桌面/手机画布点击位置和边界限制。场内设施位置为图示估计，自动化测试不证明几何尺寸已标定。
 
 `vehicles.test.mjs` 检查双车数据隔离、切车后的按钮状态、只撤销/清空当前车，以及切换阵营或坐标显隐时两条路线保留。
+
+`coordinates.test.mjs` 检查全局/相对首点换算、负坐标、双车独立原点、清空后重新建原点，以及坐标切换不改动路线数据。
 
 ## 初始化与清理
 

@@ -2,6 +2,8 @@
 
 四人 Git 协作练习：用 HTML Canvas 制作赛场路线打点画板，体验认领任务、分支开发、测试、PR、合并和同步流程。
 
+**坐标系切换**：可选全局坐标或相对当前车首点的坐标（毫米），相对首点为 `(0, 0)`，方向保持 X 向右、Y 向下，支持负值。两辆车各用自己的首点作为原点；切换仅更新读数、标尺和辅助坐标轴，保留路线位置和长度。
+
 **双车规划预览**：在“当前编辑”中选择 1 号车或 2 号车，两条路线同时显示。1 号车用实线圆点，2 号车用虚线方点，编号为“车号·点号”。撤销、清空、右侧坐标及长度仅对应当前车；红蓝切换为两条路线统一换色。
 
 **本分支新增 VEX U 场地预览**：按手册图 VEXU-1 绘制对抗赛起始布局，支持毫米坐标及折线长度。设施位置按图示比例估计，尚未精确标定；详见 [场地预览说明](docs/vexu-field.md)。下方 `v1.0.0` 信息记录原已交付版本，本次预览尚未发布。
@@ -131,11 +133,12 @@ dist/                              自动生成，Git 忽略
 
 ```javascript
 const state = window.RoutePainter.store.getState();
-// { points: [], routes: { "1": [], "2": [] }, activeVehicle: "1", team: "red", showCoordinates: true }
+// { points: [], routes: { "1": [], "2": [] }, activeVehicle: "1", team: "red", showCoordinates: true, coordinateMode: "global" }
 // points 中每个点格式：{ x: 120.5, y: 300 }
 
 // 状态为只读快照，不能 state.points.push(...) 或直接改 state.team。
 // points 为当前车路线的只读视图。切车用 setState({ activeVehicle: "2" })。
+// 坐标系用 setState({ coordinateMode: "relative" }) 或 "global"，不改动存储坐标。
 window.RoutePainter.store.setState({ points: [...state.points, { x: 200, y: 400 }] });
 window.RoutePainter.store.setState({ team: "blue" });
 
