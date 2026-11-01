@@ -18,7 +18,10 @@
         const newPoints = [...currentPoints, point];
         
         // 4. 更新状态，自动触发重绘（renderer里的draw会被调用）
-        context.store.setState({ points: newPoints });
+        try {
+          context.store.setState({ points: newPoints });
+          document.getElementById("app-status").textContent = "已添加路径点。";
+        } catch (error) { document.getElementById("app-status").textContent = error.message; }
       });
 
       // 初始化时移除“功能待开发”的描述

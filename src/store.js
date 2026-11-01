@@ -43,6 +43,7 @@
       });
       routes[next.activeVehicle] = Object.freeze(points);
     }
+    if (routes["1"].length + routes["2"].length > 5000) throw new RangeError("两辆车合计最多支持 5000 个路径点，请先删除部分点。");
     const segmentRoutes = { ...state.segmentRoutes };
     const count = Math.max(0, routes[next.activeVehicle].length - 1);
     let segments = [...segmentRoutes[next.activeVehicle].slice(0, count)];

@@ -2,7 +2,7 @@
 (function () {
   "use strict";
   const app = window.RoutePainter = window.RoutePainter || {};
-  const fieldId = "vexu-override-2026-27-preview1", appVersion = "v1.7";
+  const fieldId = "vexu-override-2026-27-preview1", appVersion = "v1.7.1";
   function point(value) {
     if (!value || !Number.isFinite(value.x) || !Number.isFinite(value.y) || value.x < 0 || value.x > 1000 || value.y < 0 || value.y > 1000) throw new RangeError("路线包含无效或超出场地的坐标。");
     return { x: value.x, y: value.y };
@@ -49,6 +49,7 @@
     });
   }
   app.plans = {
+    version: appVersion,
     validate, snapshot,
     parse(text) {
       if (typeof text !== "string" || text.length > 5 * 1024 * 1024) throw new TypeError("路线文件应为不超过 5 MB 的 JSON 文本。");

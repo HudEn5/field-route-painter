@@ -122,3 +122,41 @@ test("JSON embedded into HTML cannot terminate its data script", () => {
   assert.equal(escaped.includes("<"), false);
   assert.equal(JSON.parse(escaped).text, "</script><script>bad()</script>");
 });
+
+test("a stale window refuses to overwrite another window's newer autosave", () => {
+  const storage = memoryStorage(), a = load(), b = load();
+  const first = a.sharing.createSession(a.store, () => storage);
+  first.restore(); first.save();
+  const second = b.sharing.createSession(b.store, () => storage);
+  second.restore();
+  a.store.setState({ points: [{ x: 100, y: 100 }] });
+  assert.equal(first.save().ok, true);
+  const latest = storage.getItem("route-painter:plan:v1:workspace");
+  b.store.setState({ team: "blue" });
+  assert.equal(second.save().ok, false);
+  assert.equal(second.save().message.includes("其他窗口"), true);
+  assert.equal(storage.getItem("route-painter:plan:v1:workspace"), latest);
+  assert.equal(second.snapshot().view.team, "blue");
+});
+
+test("a transient storage error is retried on the next save", () => {
+  const app = load(), storage = memoryStorage();
+  let fail = true;
+  const session = app.sharing.createSession(app.store, () => ({
+    getItem: storage.getItem,
+    setItem(key, value) { if (fail) throw Error("temporary quota failure"); storage.setItem(key, value); }
+  }));
+  session.restore(); assert.equal(session.save().ok, false);
+  fail = false; assert.equal(session.save().ok, true);
+});
+
+test("both vehicles share a 5000-point limit and a rejected addition leaves autosave healthy", () => {
+  const app = load(), storage = memoryStorage();
+  const session = app.sharing.createSession(app.store, () => storage); session.restore();
+  app.store.setState({ points: Array.from({ length: 4999 }, (_, x) => ({ x: x % 1000, y: 100 })) });
+  app.store.setState({ activeVehicle: "2", points: [{ x: 100, y: 100 }] });
+  const before = app.store.getState();
+  assert.throws(() => app.store.setState({ points: [...before.points, { x: 200, y: 200 }] }), /5000/);
+  assert.equal(app.store.getState(), before);
+  assert.equal(session.save().ok, true);
+});

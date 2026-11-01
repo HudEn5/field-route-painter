@@ -32,7 +32,11 @@
       const submit = document.getElementById("point-submit"), globalButton = document.getElementById("point-use-global");
       const message = document.getElementById("point-editor-message");
       let previous = null, original = null;
+      let previousSelection = null;
       function refresh(state) {
+        const selected = target.value;
+        if (previous && previousSelection === selected && previous.activeVehicle === state.activeVehicle && previous.coordinateMode === state.coordinateMode
+          && previous.points === state.points) { previous = state; return; }
         const contextChanged = previous && (previous.activeVehicle !== state.activeVehicle || previous.coordinateMode !== state.coordinateMode);
         let selection = contextChanged && previous.activeVehicle !== state.activeVehicle ? "new" : target.value;
         const selectionInvalid = selection !== "new" && (!selection || Number(selection) >= state.points.length);
@@ -65,6 +69,7 @@
         }
         message.textContent = "";
         previous = state;
+        previousSelection = selection;
       }
       target.addEventListener("change", () => {
         if (target.value === "new") { xInput.value = ""; yInput.value = ""; }

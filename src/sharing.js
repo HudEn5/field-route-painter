@@ -4,6 +4,8 @@
   const app = window.RoutePainter = window.RoutePainter || {};
   function createSession(store, getStorage, embeddedText = null) {
     let documentId = "workspace", storage = null, blocked = false;
+    let seen = null;
+    const conflictMessage = "其他窗口已更新此规划，已暂停自动保存。请先导出当前路线，再刷新载入最新记录。";
     const key = () => `route-painter:plan:v1:${documentId}`;
     const snapshot = () => app.plans.snapshot(store.getState(), documentId);
     return {
@@ -16,7 +18,7 @@
         }
         try {
           storage = getStorage();
-          const saved = storage.getItem(key());
+          const saved = seen = storage.getItem(key());
           if (saved !== null) {
             const plan = app.plans.parse(saved);
             if (plan.documentId !== documentId) throw new TypeError("文档标识不匹配");
@@ -33,12 +35,18 @@
       },
       enableSaving() { blocked = false; },
       save() {
-        if (blocked) return { ok: false, message: "本机自动保存不可用，请导出路线文件保存。" };
+        if (blocked) return { ok: false, message: blocked === "conflict" ? conflictMessage : "本机自动保存不可用，请导出路线文件保存。" };
         try {
           storage ||= getStorage();
-          storage.setItem(key(), JSON.stringify(snapshot()));
+          if (storage.getItem(key()) !== seen) {
+            blocked = "conflict";
+            return { ok: false, message: conflictMessage };
+          }
+          const serialized = JSON.stringify(snapshot());
+          storage.setItem(key(), serialized);
+          seen = serialized;
           return { ok: true, message: "已自动保存到本机 · 仅当前浏览器" };
-        } catch { blocked = true; return { ok: false, message: "本机自动保存失败，请导出路线文件保存。" }; }
+        } catch (error) { return { ok: false, message: "本机自动保存失败：" + error.message + "；请导出路线文件备份，后续操作会重试保存。" }; }
       }
     };
   }
@@ -72,7 +80,7 @@
     root.querySelector("#plan-export-html").disabled = false;
     root.querySelector("#plan-message").textContent = "";
     root.querySelector("#plan-save-status").textContent = "正在读取分享路线…";
-    root.querySelector("title").textContent = "VEX U 路线规划 · v1.7 · 含路线";
+    root.querySelector("title").textContent = `VEX U 路线规划 · ${app.plans.version} · 含路线`;
     return "<!doctype html>\n" + root.outerHTML;
   }
   app.sharing = {
@@ -92,11 +100,26 @@
       input.value = ""; undo.disabled = true;
       message.textContent = document.getElementById("route-plan-data") ? restored.message : "";
       const announce = (text, error = false) => { message.textContent = text; message.className = error ? "editor-message error" : "editor-message"; };
-      const save = () => { status.textContent = session.save().message; };
+      let saving = false, requested = false;
+      const save = async () => {
+        requested = true;
+        if (saving) return;
+        saving = true;
+        try {
+          while (requested) {
+            requested = false;
+            const result = window.navigator?.locks
+              ? await window.navigator.locks.request("route-painter-autosave", () => session.save())
+              : session.save();
+            status.textContent = result.message;
+          }
+        } catch { status.textContent = "本机自动保存不可用，请导出路线文件备份。"; }
+        finally { saving = false; }
+      };
       status.textContent = restored.message;
       if (restored.ok) save();
       store.subscribe(save);
-      window.addEventListener("pagehide", save);
+      // 每次已应用操作立即保存；关闭旧窗口时不再把内存旧副本回写。
       document.getElementById("plan-export-json").addEventListener("click", () => {
         try {
           download(JSON.stringify(session.snapshot(), null, 2), "application/json;charset=utf-8", "route-plan-v1.json");
@@ -130,7 +153,7 @@
           const plan = session.snapshot();
           plan.documentId = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `share-${Date.now()}-${Math.random().toString(36).slice(2)}`;
           const html = await makeHtml(plan);
-          download(html, "text/html;charset=utf-8", "field-route-plan-v1.7.html");
+          download(html, "text/html;charset=utf-8", `field-route-plan-${app.plans.version}.html`);
           announce("已导出带路线的 HTML。发给别人后，双击即可查看和继续编辑；导出仅包含已应用的参数。");
         } catch (error) { announce(error.message, true); }
         finally { exportHtml.disabled = false; }
