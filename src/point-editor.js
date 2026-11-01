@@ -23,7 +23,7 @@
   let editPoint = null;
   app.pointEditor = {
     makePoints,
-    edit(index) { if (editPoint) editPoint(index); },
+    edit(index, options) { if (editPoint) editPoint(index, options); },
     init({ store }) {
       const form = document.getElementById("point-editor");
       const target = document.getElementById("point-target");
@@ -76,9 +76,9 @@
         refresh(store.getState());
       });
       globalButton.addEventListener("click", () => store.setState({ coordinateMode: "global" }));
-      editPoint = index => {
+      editPoint = (index, { focus = true } = {}) => {
         app.showEditor("points");
-        target.value = String(index); refresh(store.getState()); xInput.focus();
+        target.value = String(index); refresh(store.getState()); if (focus) xInput.focus();
       };
       form.addEventListener("submit", event => {
         event.preventDefault();

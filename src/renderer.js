@@ -82,6 +82,7 @@
         }
         ctx.restore();
       }
+      app.interactions?.drawOverlay?.(ctx, state);
     },
     canvasToPoint(event) {
       const rect = canvas.getBoundingClientRect();

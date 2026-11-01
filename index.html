@@ -47,7 +47,13 @@
         <div class="panel-heading"><h2 id="canvas-heading">对抗赛 · 起始布局</h2><span class="field-size">12 ft × 12 ft / 约 3.66 m × 3.66 m</span></div>
         <div class="vehicle-legend" aria-label="双车路线图例"><span><i class="vehicle-line"></i>1号车 · 圆点 · <output id="vehicle-1-count">0</output> 点</span><span><i class="vehicle-line dashed"></i>2号车 · 方点 · <output id="vehicle-2-count">0</output> 点</span></div>
         <div id="field-ruler" class="field-ruler" aria-hidden="true"><span>0</span><span>0.61</span><span>1.22</span><span>1.83</span><span>2.44</span><span>3.05</span><span>3.66 m</span></div>
-        <div class="canvas-frame"><canvas id="route-canvas" width="1000" height="1000" role="img" aria-label="VEX U 对抗赛场地，点击场地开始规划路线">你的浏览器不支持 Canvas，请使用支持 Canvas 的浏览器。</canvas></div>
+        <div class="canvas-edit-tools">
+          <label for="edit-mode">画布操作 <select id="edit-mode"><option value="draw">打点模式</option><option value="edit">编辑模式 · 拖动点</option></select></label>
+          <button id="insert-point" type="button" disabled>在选中点后插入</button><button id="remove-point" type="button" disabled>删除选中点</button>
+          <p id="edit-selection" role="status">打点模式：点击场地在末尾添加点。</p>
+          <p class="editor-hint">插入点位于下一段的中点，曲线保持原形。删除中间点后，相邻段合并为直线；以上操作均可撤销。编辑模式不会误加点。</p>
+        </div>
+        <div class="canvas-frame"><canvas id="route-canvas" width="1000" height="1000" tabindex="0" role="img" aria-label="VEX U 对抗赛场地，点击场地开始规划路线">你的浏览器不支持 Canvas，请使用支持 Canvas 的浏览器。</canvas></div>
         <div class="canvas-footer"><span id="coordinate-origin">全局原点：场地左上角 · X 向右 · Y 向下</span><output id="pointer-coordinates" aria-label="鼠标坐标">移入场地查看毫米坐标</output></div>
         <p class="field-caption">GPS 围边为外观示意，不含可用于定位的条码。</p>
       </section>
@@ -122,6 +128,7 @@
   <script src="src/plans.js"></script>
   <script src="src/curves.js"></script>
   <script src="src/renderer.js"></script>
+  <script src="src/route-edit.js"></script>
   <script src="src/interactions.js"></script>
   <script src="src/controls.js"></script>
   <script src="src/coordinates.js"></script>
