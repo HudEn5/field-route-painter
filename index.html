@@ -34,6 +34,13 @@
         <label class="checkbox-label"><input id="coordinates-toggle" type="checkbox" checked disabled> 显示坐标</label>
       </div>
     </section>
+    <section class="sharing-bar" aria-label="保存与分享">
+      <div class="sharing-actions"><strong>保存与分享</strong><button id="plan-export-json" type="button">导出路线文件</button><button id="plan-import" type="button">导入路线</button><button id="plan-export-html" type="button">导出带路线 HTML</button><button id="plan-import-undo" type="button" disabled>撤销本次导入</button></div>
+      <input id="plan-import-file" type="file" accept=".json,application/json" hidden>
+      <p class="sharing-help">导出包含两辆车及已应用的曲线参数。导入会替换当前双车规划，可撤销本次导入。自动保存仅供本机恢复，发给别人请导出文件。</p>
+      <p id="plan-save-status" class="save-status" role="status">正在读取本机记录…</p>
+      <p id="plan-message" class="editor-message" role="status" aria-live="polite"></p>
+    </section>
     <div class="editor-layout">
       <section class="canvas-panel" aria-labelledby="canvas-heading">
         <div class="panel-heading"><h2 id="canvas-heading">对抗赛 · 起始布局</h2><span class="field-size">12 ft × 12 ft / 约 3.66 m × 3.66 m</span></div>
@@ -102,7 +109,7 @@
           <ul><li>1号车：实线、圆点；2号车：虚线、方点</li><li>撤销和清空只影响当前车</li><li>右侧显示当前车的坐标及长度</li><li>红蓝切换为两辆车统一换色，保留两条路线</li></ul>
           <p>相对首点坐标以当前车第一个点为 (0, 0)，X 向右、Y 向下，左侧或上方的点可显示负值。切换坐标系保留路线位置。</p>
           <p>依据手册 2.1 版图 VEXU-1。毫米坐标按 12 ft 名义场宽换算；设施位置与大小为图示估计，使用前需实地标定。不作碰撞判断。</p>
-          <p>刷新或关闭页面后，当前路线不会保留。</p>
+          <p>规划会自动保存在当前浏览器。重要路线请导出文件备份；别人导入路线文件，或双击带路线的 HTML，即可查看和继续编辑。</p>
         </section>
       </aside>
     </div>
@@ -111,6 +118,7 @@
   <!-- 脚本顺序也是单文件打包顺序，请由 A 统一调整。 -->
   <script src="src/store.js"></script>
   <script src="src/field.js"></script>
+  <script src="src/plans.js"></script>
   <script src="src/curves.js"></script>
   <script src="src/renderer.js"></script>
   <script src="src/interactions.js"></script>
@@ -118,6 +126,7 @@
   <script src="src/coordinates.js"></script>
   <script src="src/point-editor.js"></script>
   <script src="src/curve-editor.js"></script>
+  <script src="src/sharing.js"></script>
   <script src="src/app.js"></script>
 </body>
 </html>
