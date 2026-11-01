@@ -18,13 +18,22 @@
     coordinatesEmpty: document.getElementById("coordinates-empty")
   };
   const context = { store: app.store, renderer: app.renderer, elements };
+  app.showEditor = panel => {
+    const curves = panel === "curves";
+    document.getElementById("point-panel").hidden = curves;
+    document.getElementById("curve-panel").hidden = !curves;
+    document.getElementById("point-panel-button").setAttribute("aria-pressed", String(!curves));
+    document.getElementById("curve-panel-button").setAttribute("aria-pressed", String(curves));
+  };
+  document.getElementById("point-panel-button").addEventListener("click", () => app.showEditor("points"));
+  document.getElementById("curve-panel-button").addEventListener("click", () => app.showEditor("curves"));
   const render = (state) => {
     document.body.dataset.team = state.team;
     document.getElementById("route-heading").textContent = `${state.activeVehicle}号车路线`;
     document.getElementById("vehicle-1-count").textContent = String(state.routes["1"].length);
     document.getElementById("vehicle-2-count").textContent = String(state.routes["2"].length);
     document.getElementById("point-count").textContent = String(state.points.length);
-    document.getElementById("route-length").textContent = app.field.routeLengthMeters(state.points).toFixed(2);
+    document.getElementById("route-length").textContent = app.curves.routeLengthMeters(state.points, state.segments).toFixed(2);
     app.renderer.draw(state);
   };
   try {
@@ -35,6 +44,7 @@
     app.controls.init(context);
     app.coordinates.init(context);
     app.pointEditor.init(context);
+    app.curveEditor.init(context);
     document.getElementById("app-status").textContent = "VEX U 场地已就绪 · 点击场地规划路线";
   } catch (error) {
     document.getElementById("app-status").textContent = "初始化失败：" + error.message;

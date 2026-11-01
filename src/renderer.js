@@ -41,7 +41,7 @@
         ctx.globalAlpha = vehicle === state.activeVehicle ? 1 : 0.82;
         ctx.setLineDash(second ? [20, 13] : []);
         ctx.beginPath();
-        points.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+        app.curves.trace(ctx, points, state.segmentRoutes[vehicle]);
         ctx.strokeStyle = "#ffffffdb"; ctx.lineWidth = 11; ctx.stroke();
         ctx.strokeStyle = color; ctx.lineWidth = 6; ctx.stroke();
         ctx.setLineDash([]);
@@ -64,6 +64,22 @@
           ctx.textAlign = "center"; ctx.textBaseline = "middle";
           ctx.fillStyle = "#fff"; ctx.fillText(label, x, y);
         });
+        ctx.restore();
+      }
+      const segment = state.segments[state.selectedSegment];
+      if (state.showControlPoints && segment?.type === "bezier") {
+        const start = state.points[state.selectedSegment], end = state.points[state.selectedSegment + 1];
+        ctx.save(); ctx.strokeStyle = "#ffd67b"; ctx.lineWidth = 2; ctx.setLineDash([7, 7]);
+        ctx.beginPath(); ctx.moveTo(start.x, start.y); ctx.lineTo(segment.c1.x, segment.c1.y);
+        ctx.moveTo(end.x, end.y); ctx.lineTo(segment.c2.x, segment.c2.y); ctx.stroke(); ctx.setLineDash([]);
+        for (const name of ["c1", "c2"]) {
+          const p = segment[name];
+          ctx.fillStyle = "#ffcf66"; ctx.strokeStyle = "#46361b"; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.rect(p.x - 7, p.y - 7, 14, 14); ctx.fill(); ctx.stroke();
+          ctx.font = "700 17px system-ui, sans-serif"; ctx.textAlign = "left";
+          const x = Math.max(5, Math.min(965, p.x + 12)), y = p.y < 35 ? p.y + 27 : p.y - 13;
+          ctx.lineWidth = 4; ctx.strokeText(name.toUpperCase(), x, y); ctx.fillText(name.toUpperCase(), x, y);
+        }
         ctx.restore();
       }
     },

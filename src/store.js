@@ -4,12 +4,13 @@
   const app = window.RoutePainter = window.RoutePainter || {};
   const listeners = new Set();
   const initialRoutes = Object.freeze({ "1": Object.freeze([]), "2": Object.freeze([]) });
-  let state = Object.freeze({ routes: initialRoutes, activeVehicle: "1", points: initialRoutes["1"], team: "red", showCoordinates: true, coordinateMode: "global" });
+  const initialSegments = Object.freeze({ "1": Object.freeze([]), "2": Object.freeze([]) });
+  let state = Object.freeze({ routes: initialRoutes, activeVehicle: "1", points: initialRoutes["1"], segmentRoutes: initialSegments, segments: initialSegments["1"], selectedSegment: null, showControlPoints: true, team: "red", showCoordinates: true, coordinateMode: "global" });
   app.store = {
     getState() { return state; },
     setState(patch) {
       const next = { ...state, ...patch };
-      if (!["1", "2"].includes(next.activeVehicle) || !["red", "blue"].includes(next.team) || typeof next.showCoordinates !== "boolean" || !["global", "relative"].includes(next.coordinateMode)) {
+      if (!["1", "2"].includes(next.activeVehicle) || !["red", "blue"].includes(next.team) || typeof next.showCoordinates !== "boolean" || typeof next.showControlPoints !== "boolean" || !["global", "relative"].includes(next.coordinateMode)) {
         throw new TypeError("共享状态格式不正确，请检查 README 接口约定。");
       }
       const routes = { ...state.routes };
@@ -24,7 +25,33 @@
         });
         routes[next.activeVehicle] = Object.freeze(points);
       }
-      state = Object.freeze({ routes: Object.freeze(routes), activeVehicle: next.activeVehicle, points: routes[next.activeVehicle], team: next.team, showCoordinates: next.showCoordinates, coordinateMode: next.coordinateMode });
+      const segmentRoutes = { ...state.segmentRoutes };
+      const count = Math.max(0, routes[next.activeVehicle].length - 1);
+      let segments = [...segmentRoutes[next.activeVehicle].slice(0, count)];
+      while (segments.length < count) segments.push(Object.freeze({ type: "line" }));
+      if (Object.hasOwn(patch, "segments")) {
+        if (!Array.isArray(patch.segments) || patch.segments.length !== count) throw new TypeError("路线段数量必须等于路径点数减一。");
+        segments = patch.segments.map(segment => {
+          if (!segment || !["line", "bezier"].includes(segment.type)) throw new TypeError("路线段类型必须为直线或贝塞尔曲线。");
+          const result = { type: segment.type };
+          if (segment.type === "bezier" || segment.c1 || segment.c2) {
+            for (const name of ["c1", "c2"]) {
+              const p = segment[name];
+              if (!p || !Number.isFinite(p.x) || !Number.isFinite(p.y) || p.x < 0 || p.x > 1000 || p.y < 0 || p.y > 1000) throw new RangeError("两个控制点均须位于场地内。");
+              result[name] = Object.freeze({ x: p.x, y: p.y });
+            }
+          }
+          return Object.freeze(result);
+        });
+      }
+      segmentRoutes[next.activeVehicle] = Object.freeze(segments);
+      let selectedSegment = state.activeVehicle === next.activeVehicle ? state.selectedSegment : 0;
+      if (Object.hasOwn(patch, "selectedSegment")) {
+        if (!Number.isInteger(patch.selectedSegment) || patch.selectedSegment < 0 || patch.selectedSegment >= count) throw new RangeError("请选择有效的路线段。");
+        selectedSegment = patch.selectedSegment;
+      }
+      selectedSegment = count ? Math.min(Math.max(0, selectedSegment ?? 0), count - 1) : null;
+      state = Object.freeze({ routes: Object.freeze(routes), activeVehicle: next.activeVehicle, points: routes[next.activeVehicle], segmentRoutes: Object.freeze(segmentRoutes), segments: segmentRoutes[next.activeVehicle], selectedSegment, showControlPoints: next.showControlPoints, team: next.team, showCoordinates: next.showCoordinates, coordinateMode: next.coordinateMode });
       listeners.forEach((listener) => listener(state));
     },
     subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }

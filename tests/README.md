@@ -3,7 +3,7 @@
 需要 Node.js 18 或以上版本，无需安装依赖。在仓库根目录执行：
 
 ```powershell
-node --test tests/controls.test.mjs tests/field.test.mjs tests/vehicles.test.mjs tests/coordinates.test.mjs tests/point-editor.test.mjs
+node --test tests/controls.test.mjs tests/field.test.mjs tests/vehicles.test.mjs tests/coordinates.test.mjs tests/point-editor.test.mjs tests/curves.test.mjs
 ```
 
 测试直接加载当前仓库的 `src/store.js` 和 `src/controls.js`，使用模拟按钮验证：
@@ -23,6 +23,8 @@ node --test tests/controls.test.mjs tests/field.test.mjs tests/vehicles.test.mjs
 `coordinates.test.mjs` 检查全局/相对首点换算、负坐标、双车独立原点、清空后重新建原点，以及坐标切换不改动路线数据。
 
 `point-editor.test.mjs` 验证坐标输入的反向换算、边界、负值、双车隔离、已有点修改、首点移动及无效输入拒绝。
+
+`curves.test.mjs` 验证可选曲线、混合路线、双车控制点隔离、参数保留、撤销后的段清理、贝塞尔几何和弧长，以及 Canvas 曲线绘制指令。
 
 ## 初始化与清理
 

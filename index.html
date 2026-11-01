@@ -47,7 +47,12 @@
         <section class="info-card" aria-labelledby="route-heading">
           <div class="panel-heading"><h2 id="route-heading">1号车路线</h2><span><output id="point-count">0</output> 个点</span></div>
           <p id="coordinate-mode-note" class="coordinate-mode-note">全局坐标 · 单位 mm</p>
-          <div class="route-summary"><span>折线长度（约）</span><strong><output id="route-length">0.00</output><small> m</small></strong></div>
+          <div class="route-summary"><span>路线长度（约）</span><strong><output id="route-length">0.00</output><small> m</small></strong></div>
+          <div class="editor-tabs" aria-label="编辑内容">
+            <button id="point-panel-button" type="button" aria-pressed="true" aria-controls="point-panel">路径点</button>
+            <button id="curve-panel-button" type="button" aria-pressed="false" aria-controls="curve-panel">路线段</button>
+          </div>
+          <div id="point-panel">
           <p id="coordinates-empty" class="empty-state">暂无路径点，请点击画布添加。</p>
           <ol id="coordinate-list" class="coordinate-list" aria-label="路径点坐标（毫米）"></ol>
           <form id="point-editor" class="point-editor" novalidate>
@@ -64,6 +69,27 @@
             <button id="point-submit" type="submit">添加路径点</button>
             <p id="point-editor-message" class="editor-message" role="status" aria-live="polite"></p>
           </form>
+          </div>
+          <div id="curve-panel" hidden>
+          <h3 id="curve-heading">路线段 · 直线 / 曲线</h3>
+          <form id="curve-editor" class="point-editor curve-editor" novalidate>
+            <p id="curve-editor-basis" class="coordinate-mode-note">1号车 · 全局坐标 · 单位 mm</p>
+            <label for="curve-segment">选择路线段</label><select id="curve-segment" disabled><option>至少需要两个路径点</option></select>
+            <div class="segment-endpoint"><p id="curve-start" class="editor-hint">尚无路线段</p><button id="curve-start-edit" type="button" class="edit-point-button" disabled>编辑起点</button></div>
+            <div class="segment-endpoint"><p id="curve-end" class="editor-hint"></p><button id="curve-end-edit" type="button" class="edit-point-button" disabled>编辑终点</button></div>
+            <label for="curve-type">本段类型</label><select id="curve-type" disabled><option value="line">直线</option><option value="bezier">三次贝塞尔曲线</option></select>
+            <fieldset id="curve-controls" hidden disabled>
+              <legend>控制点坐标</legend>
+              <div class="coordinate-inputs"><label for="curve-c1-x">C1 X（mm）<input id="curve-c1-x" type="number" step="any" inputmode="decimal"></label><label for="curve-c1-y">C1 Y（mm）<input id="curve-c1-y" type="number" step="any" inputmode="decimal"></label></div>
+              <div class="coordinate-inputs"><label for="curve-c2-x">C2 X（mm）<input id="curve-c2-x" type="number" step="any" inputmode="decimal"></label><label for="curve-c2-y">C2 Y（mm）<input id="curve-c2-y" type="number" step="any" inputmode="decimal"></label></div>
+            </fieldset>
+            <p id="curve-hint" class="editor-hint">先建立起点与终点。</p>
+            <label class="checkbox-label curve-controls-toggle"><input id="curve-show-controls" type="checkbox" checked> 显示当前段控制点</label>
+            <p class="editor-hint">黄色虚线为控制辅助线，不属于路线。修改端点时，已保存的控制点保持场地位置。</p>
+            <button id="curve-submit" type="submit" disabled>应用到本段</button>
+            <p id="curve-message" class="editor-message" role="status" aria-live="polite"></p>
+          </form>
+          </div>
         </section>
         <section class="info-card field-key" aria-labelledby="field-key-heading">
           <p class="eyebrow">FIELD GUIDE</p><h2 id="field-key-heading">场地图例</h2>
@@ -85,11 +111,13 @@
   <!-- 脚本顺序也是单文件打包顺序，请由 A 统一调整。 -->
   <script src="src/store.js"></script>
   <script src="src/field.js"></script>
+  <script src="src/curves.js"></script>
   <script src="src/renderer.js"></script>
   <script src="src/interactions.js"></script>
   <script src="src/controls.js"></script>
   <script src="src/coordinates.js"></script>
   <script src="src/point-editor.js"></script>
+  <script src="src/curve-editor.js"></script>
   <script src="src/app.js"></script>
 </body>
 </html>

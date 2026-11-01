@@ -72,6 +72,7 @@
       });
       globalButton.addEventListener("click", () => store.setState({ coordinateMode: "global" }));
       editPoint = index => {
+        app.showEditor("points");
         target.value = String(index); refresh(store.getState()); xInput.focus();
       };
       form.addEventListener("submit", event => {

@@ -2,6 +2,8 @@
 
 四人 Git 协作练习：用 HTML Canvas 制作赛场路线打点画板，体验认领任务、分支开发、测试、PR、合并和同步流程。
 
+**本地 v1.5**：默认画直线；右侧“路线段”可选择任意相邻点对，输入 C1、C2 坐标改为三次贝塞尔曲线，也能切回直线并保留控制点。长度按实际路线估算，详见 [贝塞尔曲线说明](docs/bezier-routes.md)。
+
 **本地 v1.4**：右侧“输入坐标”支持添加新点或修改已有点，单位为毫米，跟随当前车和所选坐标系。可点击坐标列表的“编辑”载入该点；相对模式下输入或移动首点时，先点“改用全局坐标”。各本地版本及独立 HTML 导出方式见 [本地版本索引](docs/local-versions.md)。
 
 **坐标系切换**：可选全局坐标或相对当前车首点的坐标（毫米），相对首点为 `(0, 0)`，方向保持 X 向右、Y 向下，支持负值。两辆车各用自己的首点作为原点；切换仅更新读数、标尺和辅助坐标轴，保留路线位置和长度。
@@ -120,6 +122,8 @@ src/store.js                        A：共享状态接口
 src/app.js                          A：初始化和公共 DOM 映射
 src/renderer.js                     T01：网格、路径、点及编号
 src/field.js                        VEX U 场地示意、毫米换算和折线长度
+src/curves.js                       贝塞尔几何、路线段换算和实际路线长度
+src/curve-editor.js                 路线段类型和控制点输入
 src/interactions.js                 T01：画布点击事件
 src/controls.js                     T02：撤销和清空
 src/coordinates.js                  T03：阵营和坐标
@@ -143,6 +147,8 @@ const state = window.RoutePainter.store.getState();
 // 状态为只读快照，不能 state.points.push(...) 或直接改 state.team。
 // points 为当前车路线的只读视图。切车用 setState({ activeVehicle: "2" })。
 // 坐标系用 setState({ coordinateMode: "relative" }) 或 "global"，不改动存储坐标。
+// segments / segmentRoutes 为当前车 / 两辆车的路线段；每段可选 line 或 bezier。
+// 通过 setState({ segments }) 保存控制点；selectedSegment 选择编辑段。
 window.RoutePainter.store.setState({ points: [...state.points, { x: 200, y: 400 }] });
 window.RoutePainter.store.setState({ team: "blue" });
 

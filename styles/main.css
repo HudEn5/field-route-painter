@@ -71,6 +71,18 @@ canvas { display: block; width: 100%; height: auto; aspect-ratio: 1; background:
 .editor-hint, .editor-message { font-size: 11px; line-height: 1.7; margin: 10px 0 0; color: var(--muted); overflow-wrap: anywhere; }
 .editor-message:empty { display: none; }
 .editor-message.error { color: #ac253e; }
+.curve-editor { margin-top: 12px; padding-top: 0; border: 0; }
+.segment-endpoint { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.segment-endpoint p { margin: 0; }
+.segment-endpoint button { flex-shrink: 0; }
+.curve-editor fieldset { margin: 0; padding: 0; border: 0; min-width: 0; }
+.curve-editor legend { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+.curve-editor .coordinate-inputs + .coordinate-inputs { margin-top: 12px; }
+.curve-editor .curve-controls-toggle { display: flex; font-size: 11px; margin-top: 12px; }
+.editor-tabs { display: flex; gap: 8px; margin: 0 0 18px; }
+.editor-tabs button { flex: 1; min-width: 0; font-size: 12px; }
+.editor-tabs button[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+#curve-heading { font-size: 13px; margin: 0 0 14px; }
 .route-summary { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0 15px; margin-bottom: 10px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .route-summary > span { font-size: 11px; color: var(--muted); }
 .route-summary strong { color: var(--accent); font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; }
