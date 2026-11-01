@@ -2,6 +2,26 @@
 
 四人 Git 协作练习：用 HTML Canvas 制作赛场路线打点画板，体验认领任务、分支开发、测试、PR、合并和同步流程。
 
+**本地 v1.9 方案库**：保存与分享区域展开“方案库”，为当前双车规划命名并填写备注。支持单个方案或整库独立导出为 JSON；队友在方案库导入后载入，即可继续编辑。导入合并、相同内容跳过、同名不同内容保留副本，详见 [方案库与编辑说明](docs/plan-library.md)。
+
+**本地 v1.8 编辑**：画布上方切换到编辑模式，点击选中当前车的点并拖动；需要显示控制点后才能拖动 C1/C2。拖动松开后只记录一步，取消拖动不保存。可在非末点之后插入中点（贝塞尔段保形拆分），或删除任意点（删除中间点后合并成直线）。选中点同步载入右侧坐标表单。
+
+**本地 v1.7.1 修复**：保留未提交的坐标草稿；两车合计 5000 点的限制统一在状态入口检查；保存失败允许重试。支持 Web Locks 的浏览器会串行保存，同一规划的旧窗口检测到新记录后暂停回写并提示导出备份，关闭窗口不再重复保存旧副本。请关闭仍在使用旧版代码的规划窗口。
+
+**本地 v1.7**：路线线宽减半，路径点及编号缩小；新增“撤销上一步”，可恢复误清空、删除、坐标修改、曲线修改及导入。控制点默认隐藏，在“路线段”中勾选“显示当前段控制点”后才显示，详见 [撤销与显示说明](docs/undo-clean-view.md)。
+
+**本地 v1.6**：新增路线文件导入 / 导出、导出带路线的独立 HTML 和本机自动保存，完整保留两辆车及曲线控制点。组员导入文件即可继续编辑；直接查看可发送带路线 HTML，详见 [保存与分享说明](docs/saving-sharing.md)。
+
+**本地 v1.5**：默认画直线；右侧“路线段”可选择任意相邻点对，输入 C1、C2 坐标改为三次贝塞尔曲线，也能切回直线并保留控制点。长度按实际路线估算，详见 [贝塞尔曲线说明](docs/bezier-routes.md)。
+
+**本地 v1.4**：右侧“输入坐标”支持添加新点或修改已有点，单位为毫米，跟随当前车和所选坐标系。可点击坐标列表的“编辑”载入该点；相对模式下输入或移动首点时，先点“改用全局坐标”。各本地版本及独立 HTML 导出方式见 [本地版本索引](docs/local-versions.md)。
+
+**坐标系切换**：可选全局坐标或相对当前车首点的坐标（毫米），相对首点为 `(0, 0)`，方向保持 X 向右、Y 向下，支持负值。两辆车各用自己的首点作为原点；切换仅更新读数、标尺和辅助坐标轴，保留路线位置和长度。
+
+**双车规划预览**：在“当前编辑”中选择 1 号车或 2 号车，两条路线同时显示。1 号车用实线圆点，2 号车用虚线方点，各自从 1 开始编号。删除最后一点、清空、右侧坐标及长度对应当前车；撤销按实际操作顺序回退，跨车时切回被操作的车。红蓝切换为两条路线统一换色。
+
+**本分支新增 VEX U 场地预览**：按手册图 VEXU-1 绘制对抗赛起始布局，支持毫米坐标及折线长度。设施位置按图示比例估计，尚未精确标定；详见 [场地预览说明](docs/vexu-field.md)。下方 `v1.0.0` 信息记录原已交付版本，本次预览尚未发布。
+
 **当前状态：基本功能及页面整理已合入 main，正式版本 v1.0.0 已发布，交付材料已就绪。** T01 关联 [PR #7](https://github.com/HudEn5/field-route-painter/pull/7)，T02 关联 [PR #10](https://github.com/HudEn5/field-route-painter/pull/10)，T03 关联 [PR #8](https://github.com/HudEn5/field-route-painter/pull/8)，T04 关联 [PR #12](https://github.com/HudEn5/field-route-painter/pull/12)，断网验收记录关联 [PR #13](https://github.com/HudEn5/field-route-painter/pull/13)。[v1.0.0](https://github.com/HudEn5/field-route-painter/tree/v1.0.0) 指向 `bc588f7`，功能文件与已验收的 `512c5af` 一致；A 已完成独立 HTML 断网验收，并确认其余三位成员已同步 `bc588f7`、各自负责功能测试通过。向任务发布者提交仓库链接及 HTML 文件由 A 执行，本记录不代替实际提交。
 
 ## 1. 目标和交付
@@ -14,13 +34,13 @@
 - 显示路径点坐标和鼠标位置，可关闭坐标显示。
 - 最终交付可独立打开、无需网络和其他资源文件的单个 HTML。
 
-本轮范围：浏览器画板。机器人控制、真实场地标定、账号登录、服务器、自动寻路不在基本任务中。页面逻辑坐标不代表毫米或真实场地尺寸。
+本轮范围：浏览器画板。机器人控制、真实场地标定、账号登录、服务器、自动寻路不在基本任务中。状态仍使用逻辑坐标；本分支显示的毫米值按名义场宽换算，尚未实地标定。
 
 ## 2. 立即运行
 
-无需安装依赖，双击根目录的 `index.html`，使用 Chrome 或 Edge 打开。修改文件并保存后，刷新浏览器查看结果。
+无需安装依赖，建议双击打包后的 `dist/versions/field-route-painter-v1.9.html` 使用。开发时也可双击根目录 `index.html`，或使用下方 HTTP 预览；源码直接双击时导出带路线 HTML 可能受浏览器资源读取限制，详见保存与分享说明。修改代码并保存后，刷新浏览器查看结果。
 
-当前可用：点击打点、按顺序连线、点编号和计数、撤销最后一点、一键清空、红蓝阵营切换、鼠标坐标及路径坐标列表、坐标显示开关。无路径点时撤销和清空按钮会禁用；切换配色或坐标显示不会删除路径，刷新页面会清空当前路线。
+当前可用：双车点击 / 坐标打点、坐标编辑、直线 / 贝塞尔曲线、撤销上一步、删除最后一点、清空当前车、红蓝切换、全局 / 相对首点坐标、保存和分享。刷新后恢复当前浏览器的已应用规划，撤销历史仅本次打开期间保留（最多100步）；传给别人请导出文件。
 
 可选本地服务器（已安装 Python 时）：
 
@@ -69,11 +89,13 @@ A 为 HudEn5；当前负责人见下表，角色列为建议分工。每人使�
 
 ### T02 · 撤销与一键清空（建议 C）
 
+以下为已交付 v1.0.0 的原任务约定；v1.7 已将“删除最后一点”单独保留，并增加完整操作撤销，见上方新版本说明。
+
 - 修改范围：`src/controls.js`。
 - 绑定已有按钮，通过 `store.setState` 更新数据，不自己绘图。
 - 撤销删除最后一点，清空删除所有点；无点时禁用按钮，有点时启用。
 - 订阅状态更新按钮，不依赖 T01 的内部实现。
-- T01 未完成时可用第 5 节的控制台示例造点自测；刷新恢复初始状态，不提交临时测试代码。
+- T01 未完成时可用第 5 节的控制台示例造点自测；v1.6 会自动保存，临时自测前先导出路线备份，自测后导入备份，不提交临时测试代码。
 - 验收：3 个点连续撤销到 0，无异常；清空后计数归零；重新打点正常；阵营和坐标开关不被重置。
 - 联测：与 T01 合并后，确认点、连线和点计数同步变化。
 
@@ -111,10 +133,19 @@ styles/main.css                     A：基础布局；T03 可改配色/坐标�
 src/store.js                        A：共享状态接口
 src/app.js                          A：初始化和公共 DOM 映射
 src/renderer.js                     T01：网格、路径、点及编号
+src/field.js                        VEX U 场地示意、毫米换算和折线长度
+src/curves.js                       贝塞尔几何、路线段换算和实际路线长度
+src/curve-editor.js                 路线段类型和控制点输入
 src/interactions.js                 T01：画布点击事件
 src/controls.js                     T02：撤销和清空
 src/coordinates.js                  T03：阵营和坐标
+src/point-editor.js                 v1.4：输入坐标新增和修改路径点
+src/route-edit.js                   v1.8：曲线保形拆分、任意点删除和拖动预览
+src/plans.js                        v1.6：可移植路线格式及校验
+src/sharing.js                      v1.6：导入 / 导出及本机自动保存
+src/library.js                      v1.9：命名方案库及单条 / 整库分享
 scripts/build.mjs                   A：单文件 HTML 打包
+scripts/export-version.mjs          本地版本独立 HTML 导出
 .github/pull_request_template.md    A：PR 描述模板
 .gitattributes / .gitignore         A：共享 Git 配置
 dist/                              自动生成，Git 忽略
@@ -126,12 +157,20 @@ dist/                              自动生成，Git 忽略
 
 ```javascript
 const state = window.RoutePainter.store.getState();
-// { points: [], team: "red", showCoordinates: true }
+// { points: [], routes: { "1": [], "2": [] }, activeVehicle: "1", team: "red", showCoordinates: true, coordinateMode: "global" }
 // points 中每个点格式：{ x: 120.5, y: 300 }
 
 // 状态为只读快照，不能 state.points.push(...) 或直接改 state.team。
+// points 为当前车路线的只读视图。切车用 setState({ activeVehicle: "2" })。
+// 坐标系用 setState({ coordinateMode: "relative" }) 或 "global"，不改动存储坐标。
+// segments / segmentRoutes 为当前车 / 两辆车的路线段；每段可选 line 或 bezier。
+// 通过 setState({ segments }) 保存控制点；selectedSegment 选择编辑段。
+// showControlPoints 默认 false，仅控制画布辅助点显隐，不改动曲线数据。
 window.RoutePainter.store.setState({ points: [...state.points, { x: 200, y: 400 }] });
 window.RoutePainter.store.setState({ team: "blue" });
+// v1.7：路线数据改变才记入历史，显示切换不占用撤销步数。
+window.RoutePainter.store.canUndo();
+window.RoutePainter.store.undo();
 
 // 只提供变化字段；更新后同步通知订阅者。
 const unsubscribe = window.RoutePainter.store.subscribe((nextState) => {
@@ -142,7 +181,7 @@ const unsubscribe = window.RoutePainter.store.subscribe((nextState) => {
 
 - 画布逻辑尺寸固定 `1000 × 1000`，左上角 `(0, 0)`，X 向右、Y 向下；数值在 `[0, 1000]`。
 - 页面显示尺寸会变，必须用 `renderer.canvasToPoint(event)` 换算，不能直接存 `clientX/clientY`。
-- 状态仅在当前页面内存中，刷新后重置；本轮不做持久化。
+- 状态由 store 保存在内存中；v1.6 额外保存到当前浏览器，刷新后恢复。跨浏览器或设备分享使用路线文件或带路线 HTML。
 - `subscribe` 只监听后续变化；模块初始化时先主动用 `getState()` 更新一次自己的 UI。
 - `app.js` 调用各模块的 `init(context)`，每个模块只绑定一次事件。
 - `context` 包含 `store`、`renderer`、`elements`，公共 DOM 如下。
@@ -150,7 +189,7 @@ const unsubscribe = window.RoutePainter.store.subscribe((nextState) => {
 | elements 字段 | DOM ID | 用途 |
 | --- | --- | --- |
 | `canvas` | `route-canvas` | 点击、移动和坐标换算 |
-| `undoButton` / `clearButton` | `undo-button` / `clear-button` | T02 按钮 |
+| `undoButton` / `deleteLastButton` / `clearButton` | `undo-button` / `delete-last-button` / `clear-button` | 撤销操作 / 删除最后一点 / 清空当前车 |
 | `teamSelect` | `team-select` | T03 阵营选择 |
 | `coordinatesToggle` | `coordinates-toggle` | T03 坐标开关 |
 | `pointerCoordinates` | `pointer-coordinates` | T03 鼠标读数 |

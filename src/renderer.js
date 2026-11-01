@@ -1,9 +1,8 @@
-/* T01：保留网格，在 draw 中补充路径连线、路径点和编号。 */
+/* 场地、路线依次重绘；共享路径点仍使用 0–1000 逻辑坐标。 */
 (function () {
   "use strict";
   const app = window.RoutePainter = window.RoutePainter || {};
-  let canvas;
-  let ctx;
+  let canvas, ctx;
   app.renderer = {
     init(element) {
       canvas = element;
@@ -11,75 +10,79 @@
       if (!ctx) throw new Error("浏览器无法创建 Canvas 2D 上下文。");
     },
     draw(state) {
-      // 【修复2】同步更新 aria-label，无论点数怎么变都会更新
-      if (canvas) {
-        const pointsCount = state.points ? state.points.length : 0;
-        if (pointsCount > 0) {
-          canvas.setAttribute("aria-label", "当前共有 " + pointsCount + " 个路径点");
-        } else {
-          canvas.setAttribute("aria-label", "点击画布开始绘制路线");
-        }
-      }
-
-      // 先清空画布
+      canvas.setAttribute("aria-label", `VEX U 对抗赛场地，1号车 ${state.routes["1"].length} 个点，2号车 ${state.routes["2"].length} 个点，当前编辑${state.activeVehicle}号车`);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // 画背景底色
-      ctx.fillStyle = "#f6f8f2";
-      ctx.fillRect(0, 0, 1000, 1000);
-      
-      // 画网格
-      for (let n = 100; n < 1000; n += 100) {
-        ctx.beginPath();
-        ctx.strokeStyle = n === 500 ? "#bdcdb4" : "#dce5d5";
-        ctx.lineWidth = n === 500 ? 2 : 1;
-        ctx.moveTo(n, 0); ctx.lineTo(n, 1000);
-        ctx.moveTo(0, n); ctx.lineTo(1000, n);
-        ctx.stroke();
+      app.field.draw(ctx);
+      // 相对坐标轴固定在当前车首点；只提示原点和方向，不变换路线数据。
+      if (state.coordinateMode === "relative" && state.showCoordinates && state.points.length) {
+        const origin = state.points[0];
+        ctx.save(); ctx.setLineDash([8, 8]);
+        ctx.strokeStyle = "#edf8e5b0"; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, origin.y); ctx.lineTo(1000, origin.y);
+        ctx.moveTo(origin.x, 0); ctx.lineTo(origin.x, 1000); ctx.stroke();
+        ctx.setLineDash([]); ctx.font = "600 18px system-ui, sans-serif";
+        ctx.textAlign = "left"; ctx.lineWidth = 4; ctx.strokeStyle = "#334438"; ctx.fillStyle = "#f1ffe6";
+        const labels = [
+          [`O${state.activeVehicle} (0,0)`, Math.max(8, Math.min(870, origin.x + 20)), origin.y > 940 ? origin.y - 45 : origin.y + 45],
+          ["X →", 938, Math.max(25, origin.y - 12)],
+          ["Y ↓", Math.min(938, origin.x + 12), 975]
+        ];
+        for (const [text, x, y] of labels) { ctx.strokeText(text, x, y); ctx.fillText(text, x, y); }
+        ctx.restore();
       }
-
-      // 如果没有点，就不用画了
-      if (!state.points || state.points.length === 0) return;
-
-      // 根据阵营决定颜色
-      const color = state.team === "blue" ? "#346db5" : "#b94740";
-      ctx.strokeStyle = color;
-      ctx.fillStyle = color;
-      ctx.lineWidth = 3;
-
-      // 1. 画线
-      ctx.beginPath();
-      ctx.moveTo(state.points[0].x, state.points[0].y);
-      for (let i = 1; i < state.points.length; i++) {
-        ctx.lineTo(state.points[i].x, state.points[i].y);
-      }
-      ctx.stroke();
-
-      // 2. 画点和编号
-      ctx.font = "16px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-
-      for (let i = 0; i < state.points.length; i++) {
-        const p = state.points[i];
-        
-        // 画点
+      // 当前车最后绘制，交叉处保留当前编辑路线的清晰度。
+      const order = state.activeVehicle === "1" ? ["2", "1"] : ["1", "2"];
+      for (const vehicle of order) {
+        const points = state.routes[vehicle];
+        if (points.length === 0) continue;
+        const second = vehicle === "2";
+        const color = state.team === "blue" ? (second ? "#174984" : "#167cdc") : (second ? "#961d3f" : "#d4314d");
+        ctx.save(); ctx.lineJoin = "round"; ctx.lineCap = "round";
+        ctx.globalAlpha = vehicle === state.activeVehicle ? 1 : 0.82;
+        ctx.setLineDash(second ? [12, 9] : []);
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // 【修复1】防止边缘裁切：动态计算文字位置
-        let textY = p.y - 20; // 默认画在点上方
-        if (textY < 15) { 
-          textY = p.y + 25;  // 如果贴近顶部边缘，就画在点下方
+        app.curves.trace(ctx, points, state.segmentRoutes[vehicle]);
+        ctx.strokeStyle = "#ffffffdb"; ctx.lineWidth = 6; ctx.stroke();
+        ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.stroke();
+        ctx.setLineDash([]);
+        points.forEach((p, i) => {
+          ctx.beginPath();
+          if (second) ctx.rect(p.x - 5, p.y - 5, 10, 10);
+          else ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+          ctx.fillStyle = color; ctx.fill();
+          ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.75; ctx.stroke();
+          const label = String(i + 1);
+          ctx.font = "700 14px system-ui, sans-serif";
+          const radius = Math.max(11, ctx.measureText(label).width / 2 + 4);
+          const x = Math.max(radius + 2, Math.min(998 - radius, p.x));
+          const y = p.y < 40 ? p.y + 23 : p.y - 21;
+          ctx.beginPath();
+          if (second) ctx.rect(x - radius, y - 11, radius * 2, 22);
+          else ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fillStyle = color; ctx.fill();
+          ctx.lineWidth = 1.5; ctx.strokeStyle = "#fff"; ctx.stroke();
+          ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillStyle = "#fff"; ctx.fillText(label, x, y);
+        });
+        ctx.restore();
+      }
+      const segment = state.segments[state.selectedSegment];
+      if (state.showControlPoints && segment?.type === "bezier") {
+        const start = state.points[state.selectedSegment], end = state.points[state.selectedSegment + 1];
+        ctx.save(); ctx.strokeStyle = "#ffd67b"; ctx.lineWidth = 2; ctx.setLineDash([7, 7]);
+        ctx.beginPath(); ctx.moveTo(start.x, start.y); ctx.lineTo(segment.c1.x, segment.c1.y);
+        ctx.moveTo(end.x, end.y); ctx.lineTo(segment.c2.x, segment.c2.y); ctx.stroke(); ctx.setLineDash([]);
+        for (const name of ["c1", "c2"]) {
+          const p = segment[name];
+          ctx.fillStyle = "#ffcf66"; ctx.strokeStyle = "#46361b"; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.rect(p.x - 7, p.y - 7, 14, 14); ctx.fill(); ctx.stroke();
+          ctx.font = "700 17px system-ui, sans-serif"; ctx.textAlign = "left";
+          const x = Math.max(5, Math.min(965, p.x + 12)), y = p.y < 35 ? p.y + 27 : p.y - 13;
+          ctx.lineWidth = 4; ctx.strokeText(name.toUpperCase(), x, y); ctx.fillText(name.toUpperCase(), x, y);
         }
-        
-        let textX = p.x;
-        if (textX < 15) textX = 15;       // 靠左边太近时往右挪
-        if (textX > 985) textX = 985;     // 靠右边太近时往左挪
-
-        ctx.fillText(i + 1, textX, textY);
+        ctx.restore();
       }
+      app.interactions?.drawOverlay?.(ctx, state);
     },
     canvasToPoint(event) {
       const rect = canvas.getBoundingClientRect();
