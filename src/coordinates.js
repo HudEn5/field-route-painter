@@ -39,7 +39,7 @@
         }
         
         const point = renderer.canvasToPoint(e);
-        pointerCoordinates.textContent = `X: ${Math.round(point.x)}, Y: ${Math.round(point.y)}`;
+        pointerCoordinates.textContent = `X: ${Math.round(app.field.toMillimeters(point.x))} · Y: ${Math.round(app.field.toMillimeters(point.y))} mm`;
       });
 
       // 4. 鼠标移出
@@ -68,7 +68,7 @@
         const fragment = document.createDocumentFragment();
         state.points.forEach((p) => {
           const li = document.createElement("li");
-          li.textContent = `(${Math.round(p.x)}, ${Math.round(p.y)})`;
+          li.textContent = `(${Math.round(app.field.toMillimeters(p.x))}, ${Math.round(app.field.toMillimeters(p.y))}) mm`;
           fragment.appendChild(li);
         });
 

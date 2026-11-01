@@ -2,6 +2,8 @@
 
 四人 Git 协作练习：用 HTML Canvas 制作赛场路线打点画板，体验认领任务、分支开发、测试、PR、合并和同步流程。
 
+**本分支新增 VEX U 场地预览**：按手册图 VEXU-1 绘制对抗赛起始布局，支持毫米坐标及折线长度。设施位置按图示比例估计，尚未精确标定；详见 [场地预览说明](docs/vexu-field.md)。下方 `v1.0.0` 信息记录原已交付版本，本次预览尚未发布。
+
 **当前状态：基本功能及页面整理已合入 main，正式版本 v1.0.0 已发布，交付材料已就绪。** T01 关联 [PR #7](https://github.com/HudEn5/field-route-painter/pull/7)，T02 关联 [PR #10](https://github.com/HudEn5/field-route-painter/pull/10)，T03 关联 [PR #8](https://github.com/HudEn5/field-route-painter/pull/8)，T04 关联 [PR #12](https://github.com/HudEn5/field-route-painter/pull/12)，断网验收记录关联 [PR #13](https://github.com/HudEn5/field-route-painter/pull/13)。[v1.0.0](https://github.com/HudEn5/field-route-painter/tree/v1.0.0) 指向 `bc588f7`，功能文件与已验收的 `512c5af` 一致；A 已完成独立 HTML 断网验收，并确认其余三位成员已同步 `bc588f7`、各自负责功能测试通过。向任务发布者提交仓库链接及 HTML 文件由 A 执行，本记录不代替实际提交。
 
 ## 1. 目标和交付
@@ -14,7 +16,7 @@
 - 显示路径点坐标和鼠标位置，可关闭坐标显示。
 - 最终交付可独立打开、无需网络和其他资源文件的单个 HTML。
 
-本轮范围：浏览器画板。机器人控制、真实场地标定、账号登录、服务器、自动寻路不在基本任务中。页面逻辑坐标不代表毫米或真实场地尺寸。
+本轮范围：浏览器画板。机器人控制、真实场地标定、账号登录、服务器、自动寻路不在基本任务中。状态仍使用逻辑坐标；本分支显示的毫米值按名义场宽换算，尚未实地标定。
 
 ## 2. 立即运行
 
@@ -111,6 +113,7 @@ styles/main.css                     A：基础布局；T03 可改配色/坐标�
 src/store.js                        A：共享状态接口
 src/app.js                          A：初始化和公共 DOM 映射
 src/renderer.js                     T01：网格、路径、点及编号
+src/field.js                        VEX U 场地示意、毫米换算和折线长度
 src/interactions.js                 T01：画布点击事件
 src/controls.js                     T02：撤销和清空
 src/coordinates.js                  T03：阵营和坐标

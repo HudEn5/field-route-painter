@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="四人协作开发的赛场自动路线打点画板">
-  <title>赛场路线画板</title>
+  <meta name="description" content="VEX U 全域接管赛场路线画板，支持毫米坐标和路线绘制">
+  <title>VEX U 赛场路线画板</title>
   <link rel="stylesheet" href="styles/main.css">
 </head>
 <body data-team="red">
   <main class="workspace">
     <header class="page-header">
       <div>
-        <p class="eyebrow">FIELD ROUTE PAINTER / 四人协作练习</p>
-        <h1>赛场路线画板</h1>
-        <p class="subtitle">从一个点开始，规划一条路线。</p>
+        <p class="eyebrow">FIELD ROUTE PAINTER / 2026–2027</p>
+        <h1>VEX U 赛场路线画板 <span class="season-badge">全域接管</span></h1>
+        <p class="subtitle">对照赛场，规划你的下一步。</p>
       </div>
       <a class="repo-link" href="https://github.com/HudEn5/field-route-painter" target="_blank" rel="noreferrer">查看项目仓库 ↗</a>
     </header>
@@ -30,21 +30,30 @@
     </section>
     <div class="editor-layout">
       <section class="canvas-panel" aria-labelledby="canvas-heading">
-        <div class="panel-heading"><h2 id="canvas-heading">赛场画布</h2><span>逻辑尺寸 1000 × 1000</span></div>
-        <div class="canvas-frame"><canvas id="route-canvas" width="1000" height="1000" role="img" aria-label="暂无路径点，点击画布开始规划路线">你的浏览器不支持 Canvas，请使用支持 Canvas 的浏览器。</canvas></div>
-        <div class="canvas-footer"><span>左上角 (0, 0) · X 向右 · Y 向下</span><output id="pointer-coordinates" aria-label="鼠标坐标">移入画布查看坐标</output></div>
+        <div class="panel-heading"><h2 id="canvas-heading">对抗赛 · 起始布局</h2><span class="field-size">12 ft × 12 ft / 约 3.66 m × 3.66 m</span></div>
+        <div class="field-ruler" aria-hidden="true"><span>0</span><span>0.61</span><span>1.22</span><span>1.83</span><span>2.44</span><span>3.05</span><span>3.66 m</span></div>
+        <div class="canvas-frame"><canvas id="route-canvas" width="1000" height="1000" role="img" aria-label="VEX U 对抗赛场地，点击场地开始规划路线">你的浏览器不支持 Canvas，请使用支持 Canvas 的浏览器。</canvas></div>
+        <div class="canvas-footer"><span>左上角为原点 · X 向右 · Y 向下</span><output id="pointer-coordinates" aria-label="鼠标坐标">移入场地查看毫米坐标</output></div>
+        <p class="field-caption">GPS 围边为外观示意，不含可用于定位的条码。</p>
       </section>
       <aside class="sidebar">
         <section class="info-card" aria-labelledby="route-heading">
-          <div class="panel-heading"><h2 id="route-heading">路线坐标</h2><span><output id="point-count">0</output> 个点</span></div>
+          <div class="panel-heading"><h2 id="route-heading">我的路线</h2><span><output id="point-count">0</output> 个点</span></div>
+          <div class="route-summary"><span>折线长度（约）</span><strong><output id="route-length">0.00</output><small> m</small></strong></div>
           <p id="coordinates-empty" class="empty-state">暂无路径点，请点击画布添加。</p>
-          <ol id="coordinate-list" class="coordinate-list" aria-label="路径点坐标"></ol>
+          <ol id="coordinate-list" class="coordinate-list" aria-label="路径点坐标（毫米）"></ol>
+        </section>
+        <section class="info-card field-key" aria-labelledby="field-key-heading">
+          <p class="eyebrow">FIELD GUIDE</p><h2 id="field-key-heading">场地图例</h2>
+          <ul class="legend-list"><li><span class="legend-symbol red-goal"></span>红方得分座</li><li><span class="legend-symbol blue-goal"></span>蓝方得分座</li><li><span class="legend-symbol neutral-goal"></span>中立得分座</li><li><span class="legend-symbol spinner-symbol"></span>三色筒</li><li><span class="legend-symbol pin-symbol"></span>起始得分物</li><li><span class="legend-symbol tape-symbol"></span>分区胶带线</li></ul>
+          <p class="field-rule">VEX U 起始布置：仅中场得分座预放黄／黄锥，其余得分座为空。</p>
         </section>
         <section class="info-card project-note">
-          <p class="eyebrow">使用提示</p><h2>点击赛场，规划路线</h2>
+          <p class="eyebrow">布局预览 · 按图比例绘制</p><h2>先规划，再验证</h2>
           <p>依次点击画布添加路径点，画板会按顺序连线。</p>
           <ul><li>撤销：删除最后一个路径点</li><li>清空：删除全部路径</li><li>红蓝切换和坐标开关会保留路线</li></ul>
-          <p>坐标用于规划示意，不代表实际距离。刷新或关闭页面后，当前路线不会保留。</p>
+          <p>依据手册 2.1 版图 VEXU-1。毫米坐标按 12 ft 名义场宽换算；设施位置与大小为图示估计，使用前需实地标定。不作碰撞判断。</p>
+          <p>刷新或关闭页面后，当前路线不会保留。</p>
         </section>
       </aside>
     </div>
@@ -52,6 +61,7 @@
   </main>
   <!-- 脚本顺序也是单文件打包顺序，请由 A 统一调整。 -->
   <script src="src/store.js"></script>
+  <script src="src/field.js"></script>
   <script src="src/renderer.js"></script>
   <script src="src/interactions.js"></script>
   <script src="src/controls.js"></script>

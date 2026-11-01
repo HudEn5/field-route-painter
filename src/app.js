@@ -16,6 +16,7 @@
   const render = (state) => {
     document.body.dataset.team = state.team;
     document.getElementById("point-count").textContent = String(state.points.length);
+    document.getElementById("route-length").textContent = app.field.routeLengthMeters(state.points).toFixed(2);
     app.renderer.draw(state);
   };
   try {
@@ -25,7 +26,7 @@
     app.interactions.init(context);
     app.controls.init(context);
     app.coordinates.init(context);
-    document.getElementById("app-status").textContent = "画板已就绪 · 点击画布添加路径点";
+    document.getElementById("app-status").textContent = "VEX U 场地已就绪 · 点击场地规划路线";
   } catch (error) {
     document.getElementById("app-status").textContent = "初始化失败：" + error.message;
     console.error(error);
