@@ -6,7 +6,8 @@
     init(context) {
       const { store, renderer, elements } = context;
       const { 
-        teamSelect, 
+        teamSelect,
+        vehicleSelect,
         coordinatesToggle, 
         pointerCoordinates, 
         coordinateList, 
@@ -16,6 +17,10 @@
 
       // 0. 启用控件（页面里初始是 disabled，T03 负责开启）
       teamSelect.disabled = false;
+      vehicleSelect.disabled = false;
+      vehicleSelect.addEventListener("change", (e) => {
+        store.setState({ activeVehicle: e.target.value });
+      });
       coordinatesToggle.disabled = false;
 
       // 1. 阵营切换
@@ -51,7 +56,9 @@
       function updateUI(state) {
         // 同步控件
         teamSelect.value = state.team;
+        vehicleSelect.value = state.activeVehicle;
         coordinatesToggle.checked = state.showCoordinates;
+        coordinatesEmpty.textContent = `${state.activeVehicle}号车暂无路径点，请点击场地添加。`;
 
         // 显隐控制
         const displayStyle = state.showCoordinates ? "" : "none";

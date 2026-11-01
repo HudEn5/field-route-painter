@@ -37,6 +37,12 @@ h2 { margin: 0; font-size: 14px; font-weight: 650; }
 .panel-heading > span { font-size: 11px; color: var(--muted); }
 .canvas-panel { padding: 22px; }
 .canvas-panel .panel-heading { margin-bottom: 14px; }
+.vehicle-legend { display: flex; flex-wrap: wrap; gap: 10px 24px; margin: 0 0 16px; color: var(--muted); font-size: 11px; }
+.vehicle-legend > span { display: inline-flex; align-items: center; gap: 5px; }
+.vehicle-line { display: inline-block; position: relative; width: 26px; margin-right: 4px; border-top: 3px solid var(--accent); }
+.vehicle-line::after { content: ""; position: absolute; right: 0; top: -5px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.vehicle-line.dashed { border-top-style: dashed; }
+.vehicle-line.dashed::after { border-radius: 0; }
 .field-ruler { display: flex; justify-content: space-between; padding: 0 14px; margin: 0 0 8px; color: #79857c; font-size: 10px; font-variant-numeric: tabular-nums; }
 .canvas-frame { border: 2px solid #566266; padding: 9px; border-radius: 5px; overflow: hidden; background: repeating-conic-gradient(#e0e4e2 0% 25%, #303b3e 0% 50%) 0 0 / 14px 14px; box-shadow: 0 2px 8px #25382d16; }
 canvas { display: block; width: 100%; height: auto; aspect-ratio: 1; background: #777f81; cursor: crosshair; outline: 3px solid #a7b0ae; }

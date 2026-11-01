@@ -19,8 +19,10 @@
     </header>
     <section class="toolbar" aria-label="画板工具栏">
       <div class="toolbar-group">
+        <label for="vehicle-select">当前编辑</label>
+        <select id="vehicle-select" disabled><option value="1">1号车 · 实线圆点</option><option value="2">2号车 · 虚线方点</option></select>
         <button id="undo-button" type="button" disabled>撤销最后一点</button>
-        <button id="clear-button" type="button" disabled>清空路线</button>
+        <button id="clear-button" type="button" disabled>清空当前车</button>
       </div>
       <div class="toolbar-group">
         <label for="team-select">阵营</label>
@@ -31,6 +33,7 @@
     <div class="editor-layout">
       <section class="canvas-panel" aria-labelledby="canvas-heading">
         <div class="panel-heading"><h2 id="canvas-heading">对抗赛 · 起始布局</h2><span class="field-size">12 ft × 12 ft / 约 3.66 m × 3.66 m</span></div>
+        <div class="vehicle-legend" aria-label="双车路线图例"><span><i class="vehicle-line"></i>1号车 · 圆点 · <output id="vehicle-1-count">0</output> 点</span><span><i class="vehicle-line dashed"></i>2号车 · 方点 · <output id="vehicle-2-count">0</output> 点</span></div>
         <div class="field-ruler" aria-hidden="true"><span>0</span><span>0.61</span><span>1.22</span><span>1.83</span><span>2.44</span><span>3.05</span><span>3.66 m</span></div>
         <div class="canvas-frame"><canvas id="route-canvas" width="1000" height="1000" role="img" aria-label="VEX U 对抗赛场地，点击场地开始规划路线">你的浏览器不支持 Canvas，请使用支持 Canvas 的浏览器。</canvas></div>
         <div class="canvas-footer"><span>左上角为原点 · X 向右 · Y 向下</span><output id="pointer-coordinates" aria-label="鼠标坐标">移入场地查看毫米坐标</output></div>
@@ -38,7 +41,7 @@
       </section>
       <aside class="sidebar">
         <section class="info-card" aria-labelledby="route-heading">
-          <div class="panel-heading"><h2 id="route-heading">我的路线</h2><span><output id="point-count">0</output> 个点</span></div>
+          <div class="panel-heading"><h2 id="route-heading">1号车路线</h2><span><output id="point-count">0</output> 个点</span></div>
           <div class="route-summary"><span>折线长度（约）</span><strong><output id="route-length">0.00</output><small> m</small></strong></div>
           <p id="coordinates-empty" class="empty-state">暂无路径点，请点击画布添加。</p>
           <ol id="coordinate-list" class="coordinate-list" aria-label="路径点坐标（毫米）"></ol>
@@ -50,8 +53,8 @@
         </section>
         <section class="info-card project-note">
           <p class="eyebrow">布局预览 · 按图比例绘制</p><h2>先规划，再验证</h2>
-          <p>依次点击画布添加路径点，画板会按顺序连线。</p>
-          <ul><li>撤销：删除最后一个路径点</li><li>清空：删除全部路径</li><li>红蓝切换和坐标开关会保留路线</li></ul>
+          <p>先选择当前编辑的车，再点击场地添加路径点。两辆车的路线同时保留并显示，编号格式为“车号·点号”。</p>
+          <ul><li>1号车：实线、圆点；2号车：虚线、方点</li><li>撤销和清空只影响当前车</li><li>右侧显示当前车的坐标及长度</li><li>红蓝切换为两辆车统一换色，保留两条路线</li></ul>
           <p>依据手册 2.1 版图 VEXU-1。毫米坐标按 12 ft 名义场宽换算；设施位置与大小为图示估计，使用前需实地标定。不作碰撞判断。</p>
           <p>刷新或关闭页面后，当前路线不会保留。</p>
         </section>
