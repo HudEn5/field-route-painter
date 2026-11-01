@@ -41,6 +41,17 @@
       <p class="sharing-help">导出包含两辆车及已应用的曲线参数。导入会替换当前双车规划，可撤销本次导入。自动保存仅供本机恢复，发给别人请导出文件。</p>
       <p id="plan-save-status" class="save-status" role="status">正在读取本机记录…</p>
       <p id="plan-message" class="editor-message" role="status" aria-live="polite"></p>
+      <details id="plan-library" class="plan-library">
+        <summary>方案库 · <output id="library-count">0</output> 个方案 · 命名保存与整库分享</summary>
+        <div class="library-grid">
+          <div><label for="library-select">已保存的方案</label><select id="library-select" size="5"><option value="">暂无方案</option></select><p id="library-detail" class="editor-hint"></p></div>
+          <div><label for="library-name">方案名称</label><input id="library-name" type="text" maxlength="80" autocomplete="off" placeholder="例如：红方双车方案 A"><label for="library-notes">方案备注</label><textarea id="library-notes" maxlength="1000" rows="3" placeholder="策略、分工或待验证事项"></textarea></div>
+        </div>
+        <div class="sharing-actions"><button id="library-save-new" type="button">另存为新方案</button><button id="library-update" type="button" disabled>用当前画布更新所选方案</button><button id="library-load" type="button" disabled>载入所选方案</button><button id="library-delete" type="button" disabled>删除所选方案</button><button id="library-undo" type="button" disabled>撤销方案库操作</button></div>
+        <div class="sharing-actions library-transfer"><button id="library-export-one" type="button" disabled>导出所选方案</button><button id="library-export-all" type="button" disabled>导出整库</button><button id="library-import" type="button">导入方案／方案库</button><input id="library-file" type="file" accept=".json,application/json" hidden></div>
+        <p class="sharing-help">方案库独立导出为 JSON 文件，队友在这里导入后可继续编辑。导入合并，不覆盖已有方案；同名不同内容保留副本。支持旧路线 JSON。导出的是已保存方案，修改画布后请先更新方案。带路线 HTML 仅包含当前画布；整库请用“导出整库”。</p>
+        <p id="library-message" class="editor-message" role="status" aria-live="polite"></p>
+      </details>
     </section>
     <div class="editor-layout">
       <section class="canvas-panel" aria-labelledby="canvas-heading">
@@ -135,6 +146,7 @@
   <script src="src/point-editor.js"></script>
   <script src="src/curve-editor.js"></script>
   <script src="src/sharing.js"></script>
+  <script src="src/library.js"></script>
   <script src="src/app.js"></script>
 </body>
 </html>

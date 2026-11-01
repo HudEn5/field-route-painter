@@ -80,11 +80,18 @@
     root.querySelector("#plan-export-html").disabled = false;
     root.querySelector("#plan-message").textContent = "";
     root.querySelector("#plan-save-status").textContent = "正在读取分享路线…";
+    // 分享当前画布时不夹带本机方案库的列表名称、备注等界面残留。
+    root.querySelector("#library-select")?.replaceChildren();
+    root.querySelector("#library-name")?.removeAttribute("value");
+    for (const id of ["library-notes", "library-detail", "library-message"]) {
+      const node = root.querySelector(`#${id}`); if (node) node.textContent = "";
+    }
+    const count = root.querySelector("#library-count"); if (count) count.textContent = "0";
     root.querySelector("title").textContent = `VEX U 路线规划 · ${app.plans.version} · 含路线`;
     return "<!doctype html>\n" + root.outerHTML;
   }
   app.sharing = {
-    createSession, escapedJson, makeHtml,
+    createSession, escapedJson, makeHtml, download,
     restore() {
       const embedded = document.getElementById("route-plan-data");
       session = createSession(app.store, () => window.localStorage, embedded ? embedded.textContent : null);

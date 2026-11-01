@@ -3,14 +3,14 @@
 需要 Node.js 18 或以上版本，无需安装依赖。在仓库根目录执行：
 
 ```powershell
-node --test tests/controls.test.mjs tests/field.test.mjs tests/vehicles.test.mjs tests/coordinates.test.mjs tests/point-editor.test.mjs tests/curves.test.mjs tests/plans.test.mjs
+node --test
 ```
 
 测试直接加载当前仓库的 `src/store.js` 和 `src/controls.js`，使用模拟按钮验证：
 
 - 初始按钮状态、连续撤销、清空后重新添加路径点。
 - 阵营和坐标开关保留，空操作不产生状态更新。
-- 重复初始化时每次点击只撤销一个点。
+- 重复初始化时每次点击只撤销一次操作；删除最后一点单独验证。
 - 更换按钮或共享状态后，旧事件和旧订阅被移除。
 - `destroy()` 可重复调用，销毁后可重新初始化。
 
@@ -27,6 +27,12 @@ node --test tests/controls.test.mjs tests/field.test.mjs tests/vehicles.test.mjs
 `curves.test.mjs` 验证可选曲线、混合路线、双车控制点隔离、参数保留、撤销后的段清理、贝塞尔几何和弧长，以及 Canvas 曲线绘制指令。
 
 `plans.test.mjs` 验证完整路线文件往返、原子导入、无效数据拒绝、本机自动恢复、分享文档存储隔离及内置 JSON 转义。
+
+`history.test.mjs` 验证清空和曲线数据恢复、跨车回退、导入事务和100步上限；`editor-draft.test.mjs` 验证配色等显示变化保留坐标草稿。
+
+`route-edit.test.mjs` 验证曲线保形拆分、任意点删除恢复、拖动只预览并单步提交、取消手势和控制点拖动。
+
+`library.test.mjs` 验证单条及整库文件往返、旧路线格式导入、同名副本及重复跳过、坏文件原子拒绝、删除恢复、旧窗口和配额失败保护。
 
 ## 初始化与清理
 
