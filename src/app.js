@@ -34,6 +34,7 @@
     app.interactions.init(context);
     app.controls.init(context);
     app.coordinates.init(context);
+    app.pointEditor.init(context);
     document.getElementById("app-status").textContent = "VEX U 场地已就绪 · 点击场地规划路线";
   } catch (error) {
     document.getElementById("app-status").textContent = "初始化失败：" + error.message;

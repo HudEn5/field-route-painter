@@ -66,10 +66,15 @@
         updatePointer(state);
         const fragment = document.createDocumentFragment();
         if (state.showCoordinates) {
-          state.points.forEach(p => {
+          state.points.forEach((p, index) => {
             const point = toDisplayPoint(p, state);
             const li = document.createElement("li");
-            li.textContent = `(${Math.round(point.x)}, ${Math.round(point.y)}) mm`;
+            const row = document.createElement("div"); row.className = "coordinate-item";
+            const text = document.createElement("span"); text.textContent = `(${Math.round(point.x)}, ${Math.round(point.y)}) mm`;
+            const edit = document.createElement("button"); edit.type = "button"; edit.className = "edit-point-button";
+            edit.textContent = "编辑"; edit.setAttribute("aria-label", `修改第 ${index + 1} 点坐标`);
+            edit.addEventListener("click", () => app.pointEditor.edit(index));
+            row.append(text, edit); li.appendChild(row);
             fragment.appendChild(li);
           });
         }

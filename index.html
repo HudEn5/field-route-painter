@@ -50,6 +50,20 @@
           <div class="route-summary"><span>折线长度（约）</span><strong><output id="route-length">0.00</output><small> m</small></strong></div>
           <p id="coordinates-empty" class="empty-state">暂无路径点，请点击画布添加。</p>
           <ol id="coordinate-list" class="coordinate-list" aria-label="路径点坐标（毫米）"></ol>
+          <form id="point-editor" class="point-editor" novalidate>
+            <h3>输入坐标</h3>
+            <p id="point-editor-basis" class="coordinate-mode-note">1号车 · 全局坐标 · 单位 mm</p>
+            <label for="point-target">操作对象</label>
+            <select id="point-target"><option value="new">添加新点（末尾）</option></select>
+            <div class="coordinate-inputs">
+              <label for="point-x">X（mm）<input id="point-x" type="number" step="any" inputmode="decimal" autocomplete="off" required></label>
+              <label for="point-y">Y（mm）<input id="point-y" type="number" step="any" inputmode="decimal" autocomplete="off" required></label>
+            </div>
+            <p id="point-editor-hint" class="editor-hint">输入全局毫米坐标。</p>
+            <button id="point-use-global" type="button" hidden>改用全局坐标</button>
+            <button id="point-submit" type="submit">添加路径点</button>
+            <p id="point-editor-message" class="editor-message" role="status" aria-live="polite"></p>
+          </form>
         </section>
         <section class="info-card field-key" aria-labelledby="field-key-heading">
           <p class="eyebrow">FIELD GUIDE</p><h2 id="field-key-heading">场地图例</h2>
@@ -75,6 +89,7 @@
   <script src="src/interactions.js"></script>
   <script src="src/controls.js"></script>
   <script src="src/coordinates.js"></script>
+  <script src="src/point-editor.js"></script>
   <script src="src/app.js"></script>
 </body>
 </html>

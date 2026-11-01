@@ -56,6 +56,21 @@ canvas { display: block; width: 100%; height: auto; aspect-ratio: 1; background:
 .coordinate-list { padding-left: 26px; max-height: 310px; overflow: auto; font-size: 13px; line-height: 1.9; margin: 0; }
 .coordinate-list li { padding: 4px 0 4px 6px; border-bottom: 1px solid #edf0e9; font-variant-numeric: tabular-nums; }
 .coordinate-list li::marker { color: var(--accent); font-weight: 700; }
+.coordinate-item { display: flex; justify-content: space-between; gap: 6px; align-items: center; }
+.edit-point-button { min-height: 26px; padding: 2px 6px; font-size: 11px; }
+.point-editor { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 18px; }
+.point-editor h3 { margin: 0 0 12px; font-size: 13px; }
+.point-editor > label, .coordinate-inputs label { display: block; font-size: 11px; color: var(--muted); }
+.point-editor > select { width: 100%; margin: 6px 0 12px; font-size: 12px; }
+.coordinate-inputs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.coordinate-inputs input { width: 100%; min-width: 0; border: 1px solid #ccd8cb; border-radius: 7px; background: #fff; color: inherit; min-height: 38px; padding: 7px; margin-top: 6px; font-size: 12px; font-variant-numeric: tabular-nums; }
+.coordinate-inputs input:disabled { background: #f3f5f1; }
+.point-editor button[type="submit"] { width: 100%; margin-top: 8px; border-color: var(--accent); color: var(--accent); font-size: 12px; }
+.point-editor #point-use-global { width: 100%; font-size: 12px; }
+.point-editor .coordinate-mode-note { margin: 0 0 12px; }
+.editor-hint, .editor-message { font-size: 11px; line-height: 1.7; margin: 10px 0 0; color: var(--muted); overflow-wrap: anywhere; }
+.editor-message:empty { display: none; }
+.editor-message.error { color: #ac253e; }
 .route-summary { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0 15px; margin-bottom: 10px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .route-summary > span { font-size: 11px; color: var(--muted); }
 .route-summary strong { color: var(--accent); font-size: 26px; font-weight: 650; font-variant-numeric: tabular-nums; }
