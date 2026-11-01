@@ -5,8 +5,27 @@
   const listeners = new Set();
   const initialRoutes = Object.freeze({ "1": Object.freeze([]), "2": Object.freeze([]) });
   const initialSegments = Object.freeze({ "1": Object.freeze([]), "2": Object.freeze([]) });
-  const initialState = Object.freeze({ routes: initialRoutes, activeVehicle: "1", points: initialRoutes["1"], segmentRoutes: initialSegments, segments: initialSegments["1"], selectedSegment: null, showControlPoints: true, team: "red", showCoordinates: true, coordinateMode: "global" });
+  const initialState = Object.freeze({ routes: initialRoutes, activeVehicle: "1", points: initialRoutes["1"], segmentRoutes: initialSegments, segments: initialSegments["1"], selectedSegment: null, showControlPoints: false, team: "red", showCoordinates: true, coordinateMode: "global" });
   let state = initialState;
+  const history = [];
+  const samePoint = (a, b) => a === b || Boolean(a && b && a.x === b.x && a.y === b.y);
+  function sameGeometry(a, b) {
+    return ["1", "2"].every(id => {
+      const x = a.routes[id], y = b.routes[id], s = a.segmentRoutes[id], t = b.segmentRoutes[id];
+      return x.length === y.length && s.length === t.length && x.every((p, i) => samePoint(p, y[i]))
+        && s.every((p, i) => p.type === t[i].type && samePoint(p.c1, t[i].c1) && samePoint(p.c2, t[i].c2));
+    });
+  }
+  function commit(candidate, { recordHistory = true, restoreView = false } = {}) {
+    const changed = !sameGeometry(state, candidate) || (restoreView && ["activeVehicle", "team", "coordinateMode", "showCoordinates", "showControlPoints", "selectedSegment"].some(key => state[key] !== candidate[key]));
+    if (!recordHistory) history.length = 0;
+    else if (changed) {
+      history.push({ state, vehicle: candidate.activeVehicle, restoreView });
+      if (history.length > 100) history.shift();
+    }
+    state = candidate;
+    listeners.forEach(listener => listener(state));
+  }
   function deriveState(state, patch) {
     const next = { ...state, ...patch };
     if (!["1", "2"].includes(next.activeVehicle) || !["red", "blue"].includes(next.team) || typeof next.showCoordinates !== "boolean" || typeof next.showControlPoints !== "boolean" || !["global", "relative"].includes(next.coordinateMode)) {
@@ -54,11 +73,11 @@
   }
   app.store = {
     getState() { return state; },
+    canUndo() { return history.length > 0; },
     setState(patch) {
-      state = deriveState(state, patch);
-      listeners.forEach((listener) => listener(state));
+      commit(deriveState(state, patch));
     },
-    replacePlan(plan) {
+    replacePlan(plan, { recordHistory = true } = {}) {
       // 先构造完整候选状态，全部通过后仅发布一次，避免部分导入。
       let candidate = initialState;
       for (const id of ["1", "2"]) {
@@ -66,8 +85,17 @@
       }
       const { selectedSegment, ...settings } = plan.view;
       candidate = deriveState(candidate, { ...settings, ...(selectedSegment === null ? {} : { selectedSegment }) });
-      state = candidate;
+      commit(candidate, { recordHistory, restoreView: true });
+    },
+    undo() {
+      if (!history.length) return false;
+      const previous = history.pop();
+      const current = state;
+      state = deriveState(previous.state, previous.restoreView
+        ? { showControlPoints: current.showControlPoints }
+        : { activeVehicle: previous.vehicle, team: current.team, coordinateMode: current.coordinateMode, showCoordinates: current.showCoordinates, showControlPoints: current.showControlPoints });
       listeners.forEach(listener => listener(state));
+      return true;
     },
     subscribe(listener) { listeners.add(listener); return () => listeners.delete(listener); }
   };

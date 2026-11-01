@@ -5,6 +5,7 @@
   const elements = {
     canvas: document.getElementById("route-canvas"),
     undoButton: document.getElementById("undo-button"),
+    deleteLastButton: document.getElementById("delete-last-button"),
     clearButton: document.getElementById("clear-button"),
     teamSelect: document.getElementById("team-select"),
     vehicleSelect: document.getElementById("vehicle-select"),

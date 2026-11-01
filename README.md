@@ -2,6 +2,8 @@
 
 四人 Git 协作练习：用 HTML Canvas 制作赛场路线打点画板，体验认领任务、分支开发、测试、PR、合并和同步流程。
 
+**本地 v1.7**：路线线宽减半，路径点及编号缩小；新增“撤销上一步”，可恢复误清空、删除、坐标修改、曲线修改及导入。控制点默认隐藏，在“路线段”中勾选“显示当前段控制点”后才显示，详见 [撤销与显示说明](docs/undo-clean-view.md)。
+
 **本地 v1.6**：新增路线文件导入 / 导出、导出带路线的独立 HTML 和本机自动保存，完整保留两辆车及曲线控制点。组员导入文件即可继续编辑；直接查看可发送带路线 HTML，详见 [保存与分享说明](docs/saving-sharing.md)。
 
 **本地 v1.5**：默认画直线；右侧“路线段”可选择任意相邻点对，输入 C1、C2 坐标改为三次贝塞尔曲线，也能切回直线并保留控制点。长度按实际路线估算，详见 [贝塞尔曲线说明](docs/bezier-routes.md)。
@@ -10,7 +12,7 @@
 
 **坐标系切换**：可选全局坐标或相对当前车首点的坐标（毫米），相对首点为 `(0, 0)`，方向保持 X 向右、Y 向下，支持负值。两辆车各用自己的首点作为原点；切换仅更新读数、标尺和辅助坐标轴，保留路线位置和长度。
 
-**双车规划预览**：在“当前编辑”中选择 1 号车或 2 号车，两条路线同时显示。1 号车用实线圆点，2 号车用虚线方点，各自从 1 开始编号。撤销、清空、右侧坐标及长度仅对应当前车；红蓝切换为两条路线统一换色。
+**双车规划预览**：在“当前编辑”中选择 1 号车或 2 号车，两条路线同时显示。1 号车用实线圆点，2 号车用虚线方点，各自从 1 开始编号。删除最后一点、清空、右侧坐标及长度对应当前车；撤销按实际操作顺序回退，跨车时切回被操作的车。红蓝切换为两条路线统一换色。
 
 **本分支新增 VEX U 场地预览**：按手册图 VEXU-1 绘制对抗赛起始布局，支持毫米坐标及折线长度。设施位置按图示比例估计，尚未精确标定；详见 [场地预览说明](docs/vexu-field.md)。下方 `v1.0.0` 信息记录原已交付版本，本次预览尚未发布。
 
@@ -30,9 +32,9 @@
 
 ## 2. 立即运行
 
-无需安装依赖，建议双击打包后的 `dist/versions/field-route-painter-v1.6.html` 使用。开发时也可双击根目录 `index.html`，或使用下方 HTTP 预览；源码直接双击时导出带路线 HTML 可能受浏览器资源读取限制，详见保存与分享说明。修改代码并保存后，刷新浏览器查看结果。
+无需安装依赖，建议双击打包后的 `dist/versions/field-route-painter-v1.7.html` 使用。开发时也可双击根目录 `index.html`，或使用下方 HTTP 预览；源码直接双击时导出带路线 HTML 可能受浏览器资源读取限制，详见保存与分享说明。修改代码并保存后，刷新浏览器查看结果。
 
-当前可用：双车点击 / 坐标打点、坐标编辑、直线 / 贝塞尔曲线、撤销最后一点、清空当前车、红蓝切换、全局 / 相对首点坐标、保存和分享。v1.6 刷新后会恢复当前浏览器的已应用规划；传给别人请导出文件。
+当前可用：双车点击 / 坐标打点、坐标编辑、直线 / 贝塞尔曲线、撤销上一步、删除最后一点、清空当前车、红蓝切换、全局 / 相对首点坐标、保存和分享。刷新后恢复当前浏览器的已应用规划，撤销历史仅本次打开期间保留（最多100步）；传给别人请导出文件。
 
 可选本地服务器（已安装 Python 时）：
 
@@ -80,6 +82,8 @@ A 为 HudEn5；当前负责人见下表，角色列为建议分工。每人使�
 - 验收：依次点击 3 个位置，出现 3 个点和 2 段连线；缩小窗口后点击仍准确；边缘点坐标在 0 到 1000 内。
 
 ### T02 · 撤销与一键清空（建议 C）
+
+以下为已交付 v1.0.0 的原任务约定；v1.7 已将“删除最后一点”单独保留，并增加完整操作撤销，见上方新版本说明。
 
 - 修改范围：`src/controls.js`。
 - 绑定已有按钮，通过 `store.setState` 更新数据，不自己绘图。
@@ -153,8 +157,12 @@ const state = window.RoutePainter.store.getState();
 // 坐标系用 setState({ coordinateMode: "relative" }) 或 "global"，不改动存储坐标。
 // segments / segmentRoutes 为当前车 / 两辆车的路线段；每段可选 line 或 bezier。
 // 通过 setState({ segments }) 保存控制点；selectedSegment 选择编辑段。
+// showControlPoints 默认 false，仅控制画布辅助点显隐，不改动曲线数据。
 window.RoutePainter.store.setState({ points: [...state.points, { x: 200, y: 400 }] });
 window.RoutePainter.store.setState({ team: "blue" });
+// v1.7：路线数据改变才记入历史，显示切换不占用撤销步数。
+window.RoutePainter.store.canUndo();
+window.RoutePainter.store.undo();
 
 // 只提供变化字段；更新后同步通知订阅者。
 const unsubscribe = window.RoutePainter.store.subscribe((nextState) => {
@@ -173,7 +181,7 @@ const unsubscribe = window.RoutePainter.store.subscribe((nextState) => {
 | elements 字段 | DOM ID | 用途 |
 | --- | --- | --- |
 | `canvas` | `route-canvas` | 点击、移动和坐标换算 |
-| `undoButton` / `clearButton` | `undo-button` / `clear-button` | T02 按钮 |
+| `undoButton` / `deleteLastButton` / `clearButton` | `undo-button` / `delete-last-button` / `clear-button` | 撤销操作 / 删除最后一点 / 清空当前车 |
 | `teamSelect` | `team-select` | T03 阵营选择 |
 | `coordinatesToggle` | `coordinates-toggle` | T03 坐标开关 |
 | `pointerCoordinates` | `pointer-coordinates` | T03 鼠标读数 |

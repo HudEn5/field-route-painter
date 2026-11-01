@@ -20,15 +20,15 @@
           if (saved !== null) {
             const plan = app.plans.parse(saved);
             if (plan.documentId !== documentId) throw new TypeError("文档标识不匹配");
-            store.replacePlan(plan);
+            store.replacePlan(plan, { recordHistory: false });
             return { ok: true, message: "已恢复此文档在本机的路线。" };
           }
         } catch {
           blocked = true;
-          if (embedded) store.replacePlan(embedded);
+          if (embedded) store.replacePlan(embedded, { recordHistory: false });
           return { ok: false, message: "本机保存不可用或记录无法读取；旧记录未覆盖，请导出文件保存。" };
         }
-        if (embedded) store.replacePlan(embedded);
+        if (embedded) store.replacePlan(embedded, { recordHistory: false });
         return { ok: true, message: embedded ? "已载入分享文件中的双车路线。" : "本机自动保存已启用。" };
       },
       enableSaving() { blocked = false; },
@@ -72,7 +72,7 @@
     root.querySelector("#plan-export-html").disabled = false;
     root.querySelector("#plan-message").textContent = "";
     root.querySelector("#plan-save-status").textContent = "正在读取分享路线…";
-    root.querySelector("title").textContent = "VEX U 路线规划 · v1.6 · 含路线";
+    root.querySelector("title").textContent = "VEX U 路线规划 · v1.7 · 含路线";
     return "<!doctype html>\n" + root.outerHTML;
   }
   app.sharing = {
@@ -81,6 +81,8 @@
       const embedded = document.getElementById("route-plan-data");
       session = createSession(app.store, () => window.localStorage, embedded ? embedded.textContent : null);
       restored = session.restore();
+      // 每次打开默认隐藏辅助控制点，由当前使用者主动勾选显示。
+      app.store.setState({ showControlPoints: false });
     },
     init({ store }) {
       const status = document.getElementById("plan-save-status"), message = document.getElementById("plan-message");
@@ -107,6 +109,7 @@
         try {
           if (file.size > 5 * 1024 * 1024) throw new RangeError("路线文件不能超过 5 MB。");
           const plan = app.plans.parse(await file.text());
+          plan.view.showControlPoints = store.getState().showControlPoints;
           const previous = session.snapshot();
           store.replacePlan(plan);
           beforeImport = previous; undo.disabled = false;
@@ -117,6 +120,7 @@
       });
       undo.addEventListener("click", () => {
         if (!beforeImport) return;
+        beforeImport.view.showControlPoints = store.getState().showControlPoints;
         store.replacePlan(beforeImport); beforeImport = null; undo.disabled = true;
         announce("已恢复导入前的双车规划。");
       });
@@ -126,7 +130,7 @@
           const plan = session.snapshot();
           plan.documentId = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `share-${Date.now()}-${Math.random().toString(36).slice(2)}`;
           const html = await makeHtml(plan);
-          download(html, "text/html;charset=utf-8", "field-route-plan-v1.6.html");
+          download(html, "text/html;charset=utf-8", "field-route-plan-v1.7.html");
           announce("已导出带路线的 HTML。发给别人后，双击即可查看和继续编辑；导出仅包含已应用的参数。");
         } catch (error) { announce(error.message, true); }
         finally { exportHtml.disabled = false; }

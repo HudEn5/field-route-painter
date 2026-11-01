@@ -6,7 +6,7 @@ function load() {
   const sandbox = vm.createContext({ window: {} });
   for (const name of ["store", "field", "curves", "controls"]) vm.runInContext(readFileSync(new URL(`../src/${name}.js`, import.meta.url), "utf8"), sandbox);
   const app = sandbox.window.RoutePainter;
-  const buttons = { undoButton: new EventTarget(), clearButton: new EventTarget() };
+  const buttons = { undoButton: new EventTarget(), deleteLastButton: new EventTarget(), clearButton: new EventTarget() };
   app.controls.init({ store: app.store, elements: buttons });
   return { ...app, buttons };
 }
@@ -65,11 +65,11 @@ test("point edits keep curve controls at their global field positions", () => {
   assert.equal(store.getState().segments[0].c1, control);
   assert.equal(store.getState().segments[0].type, "bezier");
 });
-test("undo and clear discard removed segments, and new segments do not resurrect old curves", () => {
+test("delete-last and clear discard removed segments; new points create straight segments", () => {
   const { store, curves, buttons } = load();
   store.setState({ points: path });
   store.setState({ segments: curves.makeSegments(store.getState(), 1, "bezier", arch), selectedSegment: 1 });
-  buttons.undoButton.dispatchEvent(new Event("click"));
+  buttons.deleteLastButton.dispatchEvent(new Event("click"));
   assert.equal(store.getState().segments.length, 1); assert.equal(store.getState().selectedSegment, 0);
   store.setState({ points: path });
   assert.equal(store.getState().segments[1].type, "line");

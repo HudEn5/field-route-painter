@@ -6,7 +6,7 @@ function load() {
   const sandbox = vm.createContext({ window: {} });
   for (const name of ["store", "controls"]) vm.runInContext(readFileSync(new URL(`../src/${name}.js`, import.meta.url), "utf8"), sandbox);
   const { store, controls } = sandbox.window.RoutePainter;
-  const elements = { undoButton: new EventTarget(), clearButton: new EventTarget() };
+  const elements = { undoButton: new EventTarget(), deleteLastButton: new EventTarget(), clearButton: new EventTarget() };
   controls.init({ store, elements });
   return { store, elements };
 }
@@ -28,11 +28,11 @@ test("switching vehicles preserves independent routes and read-only snapshots", 
   assert.ok(Object.isFrozen(snapshot.routes));
   assert.ok(Object.isFrozen(snapshot.routes["1"][0]));
 });
-test("undo and clear affect only the selected vehicle", () => {
+test("delete-last and clear affect only the selected vehicle", () => {
   const { store, elements } = load();
   store.setState({ points: first });
   store.setState({ activeVehicle: "2", points: second });
-  elements.undoButton.dispatchEvent(new Event("click"));
+  elements.deleteLastButton.dispatchEvent(new Event("click"));
   assert.equal(store.getState().routes["2"].length, 1);
   assert.equal(store.getState().routes["1"].length, 2);
   store.setState({ activeVehicle: "1" });
@@ -47,7 +47,8 @@ test("buttons follow the selected vehicle even when the other route has points",
   store.setState({ points: first });
   assert.equal(elements.undoButton.disabled, false);
   store.setState({ activeVehicle: "2" });
-  assert.equal(elements.undoButton.disabled, true);
+  assert.equal(elements.undoButton.disabled, false);
+  assert.equal(elements.deleteLastButton.disabled, true);
   assert.equal(elements.clearButton.disabled, true);
   const before = store.getState();
   elements.clearButton.dispatchEvent(new Event("click"));
